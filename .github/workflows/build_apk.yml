@@ -34,6 +34,8 @@ jobs:
         run: flutter pub get
 
       - name: Build Universal Release APK
+        env:
+          GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4096m -XX:MaxMetaspaceSize=1024m -XX:+UseG1GC"
         run: flutter build apk --release --android-skip-build-dependency-validation
 
       - name: Upload APK to Artifacts
@@ -54,16 +56,6 @@ jobs:
             ## 📄 MaoneArt Scanner & AI OCR - Android Release APK
             
             Aplikasi Scanner Dokumen Pintar berbasis Flutter dengan deteksi kertas otomatis, auto-crop, perspektif transformasi, ekstraksi teks OCR offline, dan ekspor multi-page PDF!
-            
-            ### ✨ Fitur Unggulan:
-            - 📑 **Auto Paper Detection & Auto-Crop**: Deteksi tepi kertas otomatis secara presisi menggunakan Google ML Kit Document Scanner Engine.
-            - 🔍 **AI OCR Engine (Offline & Fast)**: Ekstraksi teks dari kertas & dokumen fisik dalam hitungan detik tanpa perlu koneksi internet.
-            - 🎨 **Glassmorphism Dark Theme UI**: Tampilan modern, bersih, mewah dengan efek frosted glass dan animasi halus.
-            - 📄 **Multi-Page & PDF Export**: Gabungkan banyak halaman scan menjadi 1 berkas PDF rapi siap cetak/bagikan.
-            - 📋 **Pencarian & Salin Teks OCR**: Highlight teks yang dicari dan salin ke clipboard dengan 1 sentuhan.
-            - 🛡️ **Penyimpanan Lokal Aman**: Dokumen tersimpan rapi di perangkat dengan sistem tag/kategori (Dokumen, Struk/Nota, KTP/ID, Sertifikat, Catatan).
-            
-            📥 **Download file `app-release.apk` di bawah ini dan instal langsung di smartphone Android Anda!**
           files: build/app/outputs/flutter-apk/app-release.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
