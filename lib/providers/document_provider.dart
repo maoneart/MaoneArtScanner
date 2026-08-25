@@ -370,6 +370,7 @@ final documentProvider = StateNotifierProvider<DocumentNotifier, DocumentListSta
 const List<String> kDocumentCategories = [
   'Semua',
   'Dokumen',
+  'Pajak & STNK',
   'Struk/Nota',
   'KTP/ID',
   'Sertifikat',

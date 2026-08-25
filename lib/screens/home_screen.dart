@@ -15,6 +15,7 @@ import '../widgets/scanner_fab.dart';
 import 'document_detail_screen.dart';
 import 'ocr_screen.dart';
 import 'pdf_preview_screen.dart';
+import 'vehicle_tax_screen.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -239,6 +240,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     },
                   ),
                   IconButton(
+                    icon: const Icon(Icons.directions_car_rounded, color: AppTheme.accentEmerald, size: 22),
+                    tooltip: 'Cek Pajak Kendaraan (Plat Nomor)',
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const VehicleTaxScreen()),
+                      );
+                    },
+                  ),
+                  IconButton(
                     icon: Icon(
                       state.isGridView ? Icons.view_list_rounded : Icons.grid_view_rounded,
                       color: AppTheme.accentCyan,
@@ -279,6 +289,63 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
               ),
 
+            // Quick Cek Pajak Kendaraan Banner
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(16),
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const VehicleTaxScreen()),
+                  );
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        const Color(0xFF0F172A),
+                        AppTheme.accentEmerald.withValues(alpha: 0.18),
+                      ],
+                      begin: Alignment.centerLeft,
+                      end: Alignment.centerRight,
+                    ),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: AppTheme.accentEmerald.withValues(alpha: 0.35), width: 1),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: AppTheme.accentEmerald.withValues(alpha: 0.2),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(Icons.directions_car_rounded, color: AppTheme.accentEmerald, size: 18),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Cek Pajak Kendaraan (Scan Plat)',
+                              style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+                            ),
+                            Text(
+                              'Foto plat nomor untuk periksa status PKB & STNK',
+                              style: GoogleFonts.inter(color: const Color(0xFF94A3B8), fontSize: 11),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Icon(Icons.arrow_forward_ios_rounded, color: AppTheme.accentEmerald, size: 14),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+
             // Category Filter Chips
             CategoryFilterBar(
               selectedCategory: state.selectedCategory,
@@ -287,7 +354,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               },
             ),
 
-            const SizedBox(height: 12),
+            const SizedBox(height: 10),
 
             // Document List / Grid Area
             Expanded(

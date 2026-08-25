@@ -1,0 +1,678 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+import '../models/vehicle_tax.dart';
+import '../providers/document_provider.dart';
+import '../services/scanner_service.dart';
+import '../services/vehicle_tax_service.dart';
+import '../utils/app_theme.dart';
+import '../widgets/glass_container.dart';
+import '../widgets/maoneart_modal.dart';
+
+class VehicleTaxScreen extends ConsumerStatefulWidget {
+  final String? initialPlate;
+
+  const VehicleTaxScreen({super.key, this.initialPlate});
+
+  @override
+  ConsumerState<VehicleTaxScreen> createState() => _VehicleTaxScreenState();
+}
+
+class _VehicleTaxScreenState extends ConsumerState<VehicleTaxScreen> {
+  final TextEditingController _prefixController = TextEditingController(text: 'B');
+  final TextEditingController _numberController = TextEditingController(text: '1234');
+  final TextEditingController _suffixController = TextEditingController(text: 'ABC');
+
+  bool _isLoading = false;
+  VehicleTaxInfo? _taxInfo;
+  String? _scannedImagePath;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialPlate != null && widget.initialPlate!.isNotEmpty) {
+      final parsed = VehicleTaxService.parsePlateFromText(widget.initialPlate!);
+      if (parsed != null) {
+        _prefixController.text = parsed.prefix;
+        _numberController.text = parsed.number;
+        _suffixController.text = parsed.suffix;
+      }
+    }
+    _checkTax();
+  }
+
+  @override
+  void dispose() {
+    _prefixController.dispose();
+    _numberController.dispose();
+    _suffixController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _scanPlateWithCamera() async {
+    try {
+      final result = await ScannerService.pickFromCamera();
+      if (result.isSuccess && result.imagePaths.isNotEmpty) {
+        final path = result.imagePaths.first;
+        setState(() {
+          _scannedImagePath = path;
+          _isLoading = true;
+        });
+
+        final parsed = await VehicleTaxService.scanPlateFromImage(path);
+        if (parsed != null) {
+          _prefixController.text = parsed.prefix;
+          _numberController.text = parsed.number;
+          _suffixController.text = parsed.suffix;
+          await _checkTax();
+        } else {
+          setState(() => _isLoading = false);
+          if (mounted) {
+            MaoneArtModal.showAlertModal(
+              context,
+              title: 'Plat Tidak Terbaca Jelas',
+              message: 'Pastikan foto plat nomor kendaraan terlihat jelas, terang, dan tidak terpotong.',
+              icon: Icons.error_outline_rounded,
+              iconColor: Colors.amber,
+              buttonText: 'Coba Lagi',
+            );
+          }
+        }
+      }
+    } catch (_) {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _scanPlateFromGallery() async {
+    try {
+      final picker = ImagePicker();
+      final XFile? image = await picker.pickImage(source: ImageSource.gallery, imageQuality: 100);
+      if (image != null) {
+        setState(() {
+          _scannedImagePath = image.path;
+          _isLoading = true;
+        });
+
+        final parsed = await VehicleTaxService.scanPlateFromImage(image.path);
+        if (parsed != null) {
+          _prefixController.text = parsed.prefix;
+          _numberController.text = parsed.number;
+          _suffixController.text = parsed.suffix;
+          await _checkTax();
+        } else {
+          setState(() => _isLoading = false);
+          if (mounted) {
+            MaoneArtModal.showAlertModal(
+              context,
+              title: 'Plat Tidak Terdeteksi',
+              message: 'Tidak ditemukan format plat nomor Indonesia pada gambar tersebut. Anda dapat memasukkan nomor plat secara manual.',
+              icon: Icons.search_off_rounded,
+              iconColor: Colors.amber,
+              buttonText: 'Mengerti',
+            );
+          }
+        }
+      }
+    } catch (_) {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _checkTax() async {
+    final prefix = _prefixController.text.trim().toUpperCase();
+    final number = _numberController.text.trim();
+    final suffix = _suffixController.text.trim().toUpperCase();
+
+    if (prefix.isEmpty || number.isEmpty) return;
+
+    setState(() => _isLoading = true);
+
+    final plate = ParsedPlate(
+      prefix: prefix,
+      number: number,
+      suffix: suffix,
+    );
+
+    final result = await VehicleTaxService.getVehicleTaxDetails(plate);
+
+    if (mounted) {
+      setState(() {
+        _taxInfo = result;
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _openOfficialPortal() async {
+    if (_taxInfo == null) return;
+    final Uri url = Uri.parse(_taxInfo!.officialPortalUrl);
+    try {
+      if (await canLaunchUrl(url)) {
+        await launchUrl(url, mode: LaunchMode.externalApplication);
+      } else {
+        await launchUrl(url, mode: LaunchMode.platformDefault);
+      }
+    } catch (e) {
+      if (mounted) {
+        Clipboard.setData(ClipboardData(text: _taxInfo!.officialPortalUrl));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Link portal e-Samsat disalin ke clipboard')),
+        );
+      }
+    }
+  }
+
+  void _shareTaxDetails() {
+    if (_taxInfo == null) return;
+    final t = _taxInfo!;
+    final text = '''
+📄 INFORMASI PAJAK KENDARAAN BERMOTOR
+━━━━━━━━━━━━━━━━━━━━
+🚗 Plat Nomor   : ${t.plateNumber}
+🏛️ Wilayah      : ${t.regionName} (${t.provinceName})
+🏷️ Kendaraan    : ${t.brand} ${t.modelName} (${t.modelYear})
+🎨 Warna / CC   : ${t.color} • ${t.cylinderCapacity} cc
+
+📅 Status Pajak : ${t.isTaxActive ? 'AKTIF / BERLAKU' : 'TERLAMBAT / MATI'}
+⏰ Jatuh Tempo  : ${t.formattedTaxDueDate}
+📑 STNK 5 Tahun : ${t.formattedStnkDueDate}
+
+💰 RINCIAN TAGIHAN:
+• PKB Pokok     : ${t.formattedPkbPokok}
+• SWDKLLJ       : ${t.formattedSwdkllj}
+• Denda PKB     : ${t.formattedPkbDenda}
+• Denda SWDKLLJ : ${t.formattedSwdklljDenda}
+━━━━━━━━━━━━━━━━━━━━
+💵 TOTAL BIAYA  : ${t.formattedTotalTax}
+
+Diperiksa via MaoneArt Scanner & e-Samsat
+''';
+    Share.share(text, subject: 'Info Pajak ${t.plateNumber}');
+  }
+
+  Future<void> _saveAsDocumentNote() async {
+    if (_taxInfo == null) return;
+    final t = _taxInfo!;
+    final title = 'Pajak Kendaraan ${t.plateNumber}';
+
+    // Buat dokumen atau catatan
+    if (_scannedImagePath != null) {
+      final doc = await ref.read(documentProvider.notifier).createDocument(
+        pagePaths: [_scannedImagePath!],
+        category: 'Pajak & STNK',
+      );
+      if (doc != null) {
+        await ref.read(documentProvider.notifier).renameDocument(doc.id, title);
+        await ref.read(documentProvider.notifier).updateNotes(doc.id, 'PKB: ${t.formattedTotalTax} • Jatuh Tempo: ${t.formattedTaxDueDate}');
+        if (mounted) {
+          MaoneArtModal.showAlertModal(
+            context,
+            title: 'Tersimpan ke Dokumen',
+            message: 'Informasi dan foto plat nomor $title berhasil disimpan ke daftar dokumen Anda.',
+            icon: Icons.check_circle_outline_rounded,
+            iconColor: AppTheme.accentEmerald,
+            buttonText: 'Selesai',
+          );
+        }
+      }
+    } else {
+      Clipboard.setData(ClipboardData(text: '${t.plateNumber} - ${t.formattedTotalTax} - Jatuh Tempo: ${t.formattedTaxDueDate}'));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Rincian pajak berhasil disalin ke clipboard')),
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppTheme.bgDark,
+      appBar: AppBar(
+        title: Text(
+          'Cek Pajak Plat Nomor',
+          style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 18),
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.share_rounded, color: AppTheme.accentEmerald, size: 20),
+            tooltip: 'Bagikan Rincian Pajak',
+            onPressed: _taxInfo != null ? _shareTaxDetails : null,
+          ),
+        ],
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // 1. Scan Action Buttons
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: _isLoading ? null : _scanPlateWithCamera,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppTheme.accentCyan,
+                        foregroundColor: Colors.black,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                      ),
+                      icon: const Icon(Icons.camera_alt_rounded, size: 18, color: Colors.black),
+                      label: Text(
+                        'Foto Plat (Kamera)',
+                        style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 13),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: _isLoading ? null : _scanPlateFromGallery,
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
+                        backgroundColor: Colors.white.withValues(alpha: 0.05),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                      ),
+                      icon: const Icon(Icons.photo_library_rounded, size: 18, color: AppTheme.accentEmerald),
+                      label: Text(
+                        'Pilih dari Galeri',
+                        style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+
+              // 2. Realistic Indonesian TNKB Plate View & Inputs
+              _buildPlateVisualizer(),
+              const SizedBox(height: 20),
+
+              // 3. Tax Details & Bill Card
+              if (_isLoading)
+                const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(32),
+                    child: Column(
+                      children: [
+                        CircularProgressIndicator(color: AppTheme.accentCyan),
+                        SizedBox(height: 16),
+                        Text('Mengecek data e-Samsat & Bapenda...', style: TextStyle(color: Color(0xFF94A3B8))),
+                      ],
+                    ),
+                  ),
+                )
+              else if (_taxInfo != null)
+                _buildTaxResultCard(_taxInfo!)
+              else
+                const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(24),
+                    child: Text(
+                      'Masukkan nomor plat atau foto plat nomor kendaraan untuk memeriksa status & tarif pajak.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Color(0xFF94A3B8)),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Desain visual plat nomor Indonesia (TNKB) realistis dengan input yang bisa diedit langsung
+  Widget _buildPlateVisualizer() {
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFF0F172A),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.15), width: 1.5),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.5),
+            blurRadius: 16,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        children: [
+          // Embossed License Plate Box
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              color: Colors.black,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.white70, width: 2),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.white.withValues(alpha: 0.05),
+                  spreadRadius: 1,
+                  blurRadius: 4,
+                ),
+              ],
+            ),
+            child: Column(
+              children: [
+                // Plate Main Text Field (Prefix, Number, Suffix)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    // Kode Wilayah (e.g. B / D / AB)
+                    SizedBox(
+                      width: 55,
+                      child: TextField(
+                        controller: _prefixController,
+                        textAlign: TextAlign.center,
+                        textCapitalization: TextCapitalization.characters,
+                        maxLength: 2,
+                        style: GoogleFonts.robotoMono(
+                          color: Colors.white,
+                          fontSize: 26,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1,
+                        ),
+                        decoration: const InputDecoration(
+                          counterText: '',
+                          border: InputBorder.none,
+                          isDense: true,
+                          contentPadding: EdgeInsets.zero,
+                          hintText: 'B',
+                          hintStyle: TextStyle(color: Colors.white24),
+                        ),
+                        onChanged: (_) => _checkTax(),
+                      ),
+                    ),
+                    const Text(' ', style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
+                    // Nomor Polisi (e.g. 1234)
+                    SizedBox(
+                      width: 90,
+                      child: TextField(
+                        controller: _numberController,
+                        keyboardType: TextInputType.number,
+                        textAlign: TextAlign.center,
+                        maxLength: 4,
+                        style: GoogleFonts.robotoMono(
+                          color: Colors.white,
+                          fontSize: 26,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 2,
+                        ),
+                        decoration: const InputDecoration(
+                          counterText: '',
+                          border: InputBorder.none,
+                          isDense: true,
+                          contentPadding: EdgeInsets.zero,
+                          hintText: '1234',
+                          hintStyle: TextStyle(color: Colors.white24),
+                        ),
+                        onChanged: (_) => _checkTax(),
+                      ),
+                    ),
+                    const Text(' ', style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
+                    // Seri Belakang (e.g. ABC)
+                    SizedBox(
+                      width: 75,
+                      child: TextField(
+                        controller: _suffixController,
+                        textAlign: TextAlign.center,
+                        textCapitalization: TextCapitalization.characters,
+                        maxLength: 3,
+                        style: GoogleFonts.robotoMono(
+                          color: Colors.white,
+                          fontSize: 26,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1,
+                        ),
+                        decoration: const InputDecoration(
+                          counterText: '',
+                          border: InputBorder.none,
+                          isDense: true,
+                          contentPadding: EdgeInsets.zero,
+                          hintText: 'ABC',
+                          hintStyle: TextStyle(color: Colors.white24),
+                        ),
+                        onChanged: (_) => _checkTax(),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 2),
+                // Month / Year Subtext (e.g. 08.28)
+                Text(
+                  _taxInfo?.plateMonthYear ?? '08.29',
+                  style: GoogleFonts.robotoMono(
+                    color: Colors.white70,
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 2,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            '💡 Ketuk huruf/angka di atas untuk mengubah plat nomor',
+            style: GoogleFonts.outfit(color: const Color(0xFF94A3B8), fontSize: 11),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Tampilan Rincian Data Pajak Kendaraan & Tagihan e-Samsat
+  Widget _buildTaxResultCard(VehicleTaxInfo info) {
+    return Column(
+      children: [
+        // Status Badge Card
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            color: info.isTaxActive ? AppTheme.accentEmerald.withValues(alpha: 0.15) : Colors.redAccent.withValues(alpha: 0.15),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: info.isTaxActive ? AppTheme.accentEmerald.withValues(alpha: 0.4) : Colors.redAccent.withValues(alpha: 0.4),
+            ),
+          ),
+          child: Row(
+            children: [
+              Icon(
+                info.isTaxActive ? Icons.check_circle_rounded : Icons.warning_amber_rounded,
+                color: info.isTaxActive ? AppTheme.accentEmerald : Colors.redAccent,
+                size: 24,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      info.isTaxActive ? 'PAJAK AKTIF & BERLAKU' : 'PAJAK TERLAMBAT / MATI',
+                      style: GoogleFonts.outfit(
+                        color: info.isTaxActive ? AppTheme.accentEmerald : Colors.redAccent,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                    ),
+                    Text(
+                      info.isTaxActive ? 'Jatuh tempo: ${info.formattedTaxDueDate}' : 'Lewat jatuh tempo: ${info.formattedTaxDueDate}',
+                      style: GoogleFonts.inter(color: Colors.white70, fontSize: 12),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+
+        // Detail Kendaraan
+        GlassContainer(
+          borderRadius: 18,
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const Icon(Icons.directions_car_rounded, color: AppTheme.accentCyan, size: 20),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Spesifikasi Kendaraan',
+                    style: GoogleFonts.outfit(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+              const Divider(color: Colors.white12, height: 20),
+              _buildInfoRow('Wilayah / Samsat', info.regionName),
+              _buildInfoRow('Provinsi', info.provinceName),
+              _buildInfoRow('Jenis Kendaraan', info.vehicleType),
+              _buildInfoRow('Merek & Tipe', '${info.brand} ${info.modelName}'),
+              _buildInfoRow('Tahun Pembuatan', '${info.modelYear}'),
+              _buildInfoRow('Warna Kendaraan', info.color),
+              _buildInfoRow('Kapasitas Mesin', '${info.cylinderCapacity} cc (${info.fuelType})'),
+              _buildInfoRow('Masa Berlaku STNK', info.formattedStnkDueDate),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+
+        // Rincian Biaya Pajak
+        GlassContainer(
+          borderRadius: 18,
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const Icon(Icons.receipt_long_rounded, color: AppTheme.accentEmerald, size: 20),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Rincian Pajak Kendaraan (PKB)',
+                    style: GoogleFonts.outfit(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+              const Divider(color: Colors.white12, height: 20),
+              _buildInfoRow('PKB Pokok (Pajak Kendaraan)', info.formattedPkbPokok),
+              _buildInfoRow('SWDKLLJ (Jasa Raharja)', info.formattedSwdkllj),
+              if (info.pkbDenda > 0) _buildInfoRow('Denda PKB', info.formattedPkbDenda, isDanger: true),
+              if (info.swdklljDenda > 0) _buildInfoRow('Denda SWDKLLJ', info.formattedSwdklljDenda, isDanger: true),
+              const Divider(color: Colors.white24, height: 24),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'TOTAL BIAYA PAJAK',
+                    style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
+                  ),
+                  Text(
+                    info.formattedTotalTax,
+                    style: GoogleFonts.outfit(
+                      color: AppTheme.accentCyan,
+                      fontWeight: FontWeight.w900,
+                      fontSize: 18,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 20),
+
+        // Action Buttons: Open Official e-Samsat & Save Note
+        Row(
+          children: [
+            Expanded(
+              child: SizedBox(
+                height: 48,
+                child: OutlinedButton.icon(
+                  onPressed: _saveAsDocumentNote,
+                  style: OutlinedButton.styleFrom(
+                    side: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
+                    backgroundColor: Colors.white.withValues(alpha: 0.05),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  ),
+                  icon: const Icon(Icons.save_rounded, color: Colors.white70, size: 18),
+                  label: Text(
+                    'Simpan Hasil',
+                    style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: SizedBox(
+                height: 48,
+                child: ElevatedButton.icon(
+                  onPressed: _openOfficialPortal,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.accentEmerald,
+                    foregroundColor: Colors.black,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  ),
+                  icon: const Icon(Icons.open_in_browser_rounded, color: Colors.black, size: 18),
+                  label: Text(
+                    'Portal e-Samsat',
+                    style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 13),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 24),
+      ],
+    );
+  }
+
+  Widget _buildInfoRow(String label, String value, {bool isDanger = false}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            flex: 4,
+            child: Text(
+              label,
+              style: GoogleFonts.outfit(color: const Color(0xFF94A3B8), fontSize: 13),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            flex: 5,
+            child: Text(
+              value,
+              textAlign: TextAlign.end,
+              style: GoogleFonts.outfit(
+                color: isDanger ? Colors.redAccent : Colors.white,
+                fontWeight: FontWeight.w600,
+                fontSize: 13,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
