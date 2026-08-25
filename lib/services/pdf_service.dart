@@ -136,9 +136,11 @@ class PdfService {
                   pw.Positioned(
                     left: 0,
                     top: 0,
-                    width: imgW,
-                    height: imgH,
-                    child: pw.Image(imageProvider, fit: pw.BoxFit.fill),
+                    child: pw.SizedBox(
+                      width: imgW,
+                      height: imgH,
+                      child: pw.Image(imageProvider, fit: pw.BoxFit.fill),
+                    ),
                   ),
                   // Layer 2: Lapisan Teks OCR Selectable & Searchable
                   ...ocrData.lines.map((line) {
@@ -146,15 +148,17 @@ class PdfService {
                     return pw.Positioned(
                       left: line.left,
                       top: line.top,
-                      width: line.width,
-                      height: line.height,
-                      child: pw.Opacity(
-                        opacity: 0.0, // Lapisan teks tak kasat mata di atas gambar
-                        child: pw.Text(
-                          line.text,
-                          style: pw.TextStyle(
-                            fontSize: fontSize,
-                            color: PdfColors.black,
+                      child: pw.SizedBox(
+                        width: line.width,
+                        height: line.height,
+                        child: pw.Opacity(
+                          opacity: 0.0, // Lapisan teks tak kasat mata di atas gambar
+                          child: pw.Text(
+                            line.text,
+                            style: pw.TextStyle(
+                              fontSize: fontSize,
+                              color: PdfColors.black,
+                            ),
                           ),
                         ),
                       ),
@@ -189,9 +193,11 @@ class PdfService {
                   pw.Positioned(
                     left: offsetX,
                     top: offsetY,
-                    width: renderW,
-                    height: renderH,
-                    child: pw.Image(imageProvider, fit: pw.BoxFit.fill),
+                    child: pw.SizedBox(
+                      width: renderW,
+                      height: renderH,
+                      child: pw.Image(imageProvider, fit: pw.BoxFit.fill),
+                    ),
                   ),
                   // Layer 2: Lapisan Teks OCR Selectable & Searchable
                   ...ocrData.lines.map((line) {
@@ -204,15 +210,17 @@ class PdfService {
                     return pw.Positioned(
                       left: textLeft,
                       top: textTop,
-                      width: textWidth,
-                      height: textHeight,
-                      child: pw.Opacity(
-                        opacity: 0.0, // Teks transparan yang bisa di-select dan dicari di PDF
-                        child: pw.Text(
-                          line.text,
-                          style: pw.TextStyle(
-                            fontSize: fontSize,
-                            color: PdfColors.black,
+                      child: pw.SizedBox(
+                        width: textWidth,
+                        height: textHeight,
+                        child: pw.Opacity(
+                          opacity: 0.0, // Teks transparan yang bisa di-select dan dicari di PDF
+                          child: pw.Text(
+                            line.text,
+                            style: pw.TextStyle(
+                              fontSize: fontSize,
+                              color: PdfColors.black,
+                            ),
                           ),
                         ),
                       ),
