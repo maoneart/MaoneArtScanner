@@ -29,6 +29,7 @@ class VehicleTaxInfo {
 
   final String officialPortalUrl;
   final String officialSamsatName;
+  final bool isLiveApiData;
 
   const VehicleTaxInfo({
     required this.plateNumber,
@@ -55,6 +56,7 @@ class VehicleTaxInfo {
     required this.isTaxActive,
     required this.officialPortalUrl,
     required this.officialSamsatName,
+    this.isLiveApiData = false,
   });
 
   static String _safeCurrency(int amount) {

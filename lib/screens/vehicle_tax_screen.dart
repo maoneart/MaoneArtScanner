@@ -683,6 +683,26 @@ Diperiksa via MaoneArt Scanner & e-Samsat
                   ],
                 ),
               ),
+              if (info.isLiveApiData)
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: AppTheme.accentEmerald.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: AppTheme.accentEmerald, width: 1),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.bolt_rounded, color: AppTheme.accentEmerald, size: 13),
+                      const SizedBox(width: 3),
+                      Text(
+                        'LIVE SAMSAT',
+                        style: GoogleFonts.outfit(color: AppTheme.accentEmerald, fontSize: 10, fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                ),
             ],
           ),
         ),

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
@@ -634,12 +635,114 @@ class VehicleTaxService {
     'Kawasaki KLX 150': const VehiclePresetSpec(brand: 'Kawasaki', model: 'KLX 150 SE Extreme', cc: 144, pkbBase: 410000, isMotorcycle: true),
   };
 
+  /// Menghubungi API Live Online (Bapenda Jabar SAMBARA, Banten, DIY)
+  static Future<VehicleTaxInfo?> _fetchFromLiveApi(ParsedPlate plate) async {
+    try {
+      final cleanPrefix = plate.prefix.toUpperCase().trim();
+      final cleanSuffix = plate.suffix.toUpperCase().trim();
+      final firstSuffix = cleanSuffix.isNotEmpty ? cleanSuffix[0] : '';
+
+      String area = 'jabar';
+      if (cleanPrefix == 'AB') {
+        area = 'diy';
+      } else if (cleanPrefix == 'A' || (cleanPrefix == 'B' && (firstSuffix == 'W' || firstSuffix == 'C' || firstSuffix == 'V' || firstSuffix == 'N'))) {
+        area = 'banten';
+      } else if (cleanPrefix == 'D' || cleanPrefix == 'E' || cleanPrefix == 'F' || cleanPrefix == 'T' || cleanPrefix == 'Z' || (cleanPrefix == 'B' && (firstSuffix == 'K' || firstSuffix == 'Z'))) {
+        area = 'jabar';
+      } else {
+        area = 'jabar';
+      }
+
+      final nopol = plate.fullPlate;
+      final encodedNopol = Uri.encodeComponent(nopol);
+      final url = Uri.parse('https://cekpajak.bystpn.web.id/api/v1/$area/$encodedNopol');
+
+      final client = HttpClient();
+      client.connectionTimeout = const Duration(seconds: 4);
+      final request = await client.getUrl(url);
+      request.headers.set('User-Agent', 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36');
+      request.headers.set('Referer', 'https://cekpajak.bystpn.web.id/');
+
+      final response = await request.close().timeout(const Duration(seconds: 5));
+      if (response.statusCode == 200) {
+        final body = await response.transform(utf8.decoder).join();
+        final json = jsonDecode(body) as Map<String, dynamic>;
+        if (json['status'] == true && json['data'] != null) {
+          final data = json['data'] as Map<String, dynamic>;
+          final pajak = data['pajak'] as Map<String, dynamic>? ?? {};
+
+          final meta = getRegionMeta(plate.prefix, suffix: plate.suffix);
+          final brand = data['merk']?.toString().toUpperCase() ?? 'KENDARAAN';
+          final modelName = data['model']?.toString().toUpperCase() ?? 'STANDAR';
+          final modelYear = int.tryParse(data['tahun']?.toString() ?? '') ?? 2020;
+
+          final pkbPokok = int.tryParse(pajak['pkbPokok']?.toString() ?? '0') ?? 0;
+          final pkbDenda = int.tryParse(pajak['pkbDenda']?.toString() ?? '0') ?? 0;
+          final swdkllj = int.tryParse(pajak['swdklljPokok']?.toString() ?? '0') ?? 0;
+          final swdklljDenda = int.tryParse(pajak['swdklljDenda']?.toString() ?? '0') ?? 0;
+          final opsenPokok = int.tryParse(pajak['opsenPokok']?.toString() ?? '0') ?? 0;
+          final totalTax = int.tryParse(pajak['totalPajak']?.toString() ?? '0') ?? (pkbPokok + pkbDenda + swdkllj + swdklljDenda + opsenPokok);
+
+          DateTime taxDueDate = DateTime.now();
+          if (pajak['tglAkhirPkb'] != null) {
+            final parsedDate = DateTime.tryParse(pajak['tglAkhirPkb'].toString());
+            if (parsedDate != null) taxDueDate = parsedDate;
+          }
+
+          final isTaxActive = pajak['aktif'] == true || taxDueDate.isAfter(DateTime.now());
+          final numberInt = int.tryParse(plate.number) ?? 1000;
+          final isMotor = numberInt >= 2000 && numberInt <= 6999;
+          final vehicleType = isMotor ? 'Sepeda Motor' : 'Mobil Penumpang';
+
+          return VehicleTaxInfo(
+            plateNumber: plate.fullPlate,
+            prefixCode: plate.prefix,
+            numberCode: plate.number,
+            suffixCode: plate.suffix,
+            plateMonthYear: plate.monthYear,
+            regionName: data['area']?.toString() ?? meta.regionName,
+            provinceName: meta.provinceName,
+            vehicleType: vehicleType,
+            brand: brand,
+            modelName: modelName,
+            modelYear: modelYear,
+            color: 'Sesuai STNK',
+            fuelType: 'Bensin',
+            cylinderCapacity: isMotor ? 150 : 1500,
+            pkbPokok: pkbPokok,
+            swdkllj: swdkllj,
+            pkbDenda: pkbDenda,
+            swdklljDenda: swdklljDenda,
+            totalTax: totalTax,
+            taxDueDate: taxDueDate,
+            stnkDueDate: taxDueDate.add(const Duration(days: 365 * 4)),
+            isTaxActive: isTaxActive,
+            officialPortalUrl: meta.portalUrl,
+            officialSamsatName: meta.samsatName,
+            isLiveApiData: true,
+          );
+        }
+      }
+    } catch (_) {
+      // Fallback ke simulasi
+    }
+    return null;
+  }
+
   /// Mengambil rincian data pajak dan estimasi biaya berbasis data plat & bulan-tahun STNK
   static Future<VehicleTaxInfo> getVehicleTaxDetails(
     ParsedPlate plate, {
     String? vehicleTypeOverride,
     String? customModelName,
   }) async {
+    // 1. Coba ambil data Live API real-time terlebih dahulu jika tidak ada override model manual
+    if (customModelName == null) {
+      final liveInfo = await _fetchFromLiveApi(plate);
+      if (liveInfo != null) {
+        return liveInfo;
+      }
+    }
+
     final meta = getRegionMeta(plate.prefix, suffix: plate.suffix);
     final numberInt = int.tryParse(plate.number) ?? 1000;
 

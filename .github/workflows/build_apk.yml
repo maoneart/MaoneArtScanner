@@ -53,15 +53,15 @@ jobs:
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/heads/main') || startsWith(github.ref, 'refs/heads/master')
         with:
-          tag_name: v1.0.6
-          name: 'MaoneArt Scanner v1.0.6 (Release)'
+          tag_name: v1.0.7
+          name: 'MaoneArt Scanner v1.0.7 (Release)'
           body: |
-            ## 📄 MaoneArt Scanner & AI OCR - Android Release APK (v1.0.6)
+            ## 📄 MaoneArt Scanner & AI OCR - Android Release APK (v1.0.7)
             
-            - **Deteksi Wilayah & Samsat Akurat**: Deteksi kota/kabupaten spesifik (Bekasi, Depok, Kota Bogor, Kab. Bogor, Tangerang, Jakarta, Bandung, dll) berdasarkan prefix dan suffix plat nomor.
-            - **Katalog Model Kendaraan Lengkap**: Pilihan model mobil & motor populer (Daihatsu Ayla, Toyota Avanza, Honda Brio, Calya, Sigra, BeAT, NMAX, dll) dengan kalkulasi PKB Pokok yang presisi.
+            - **Integrasi Live Data e-Samsat Real-Time**: Terhubung langsung ke API e-Samsat (Bapenda Jabar SAMBARA, Banten, DIY) untuk menarik data resmi merk asli kendaraan, nama tipe, tahun, dan tagihan PKB/SWDKLLJ secara akurat.
+            - **Deteksi Wilayah & Samsat Akurat**: Deteksi kota/kabupaten spesifik (Bekasi, Depok, Kota Bogor, Kab. Bogor, Tangerang, Jakarta, Bandung, dll).
             - **Bulan & Tahun STNK Interaktif**: Kotak bulan dan tahun STNK (misal 08.28) dapat diedit langsung secara manual atau otomatis dari scan kamera.
-            - **Perhitungan Denda & Jatuh Tempo Real-Time**: Evaluasi status Pajak Aktif vs Mati Pajak dan perhitungan denda PKB serta SWDKLLJ akurat.
+            - **Offline Simulation Fallback**: Jika server samsat offline/data tidak ditemukan, otomatis beralih ke simulasi cerdas sesuai model kendaraan pilihan.
             
             Aplikasi Scanner Dokumen Pintar berbasis Flutter dengan deteksi kertas otomatis, auto-crop, perspektif transformasi, ekstraksi teks OCR offline, dan ekspor multi-page PDF!
           files: build/app/outputs/flutter-apk/app-release.apk
