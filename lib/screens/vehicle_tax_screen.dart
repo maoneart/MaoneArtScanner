@@ -71,7 +71,12 @@ class _VehicleTaxScreenState extends ConsumerState<VehicleTaxScreen> {
 
   Future<void> _scanPlateWithCamera() async {
     try {
-      final result = await ScannerService.pickFromCamera();
+      // Buka AI Document Scanner dengan Viewfinder, Auto-Detection & Corner Crop
+      var result = await ScannerService.startDocumentScan(pageLimit: 1);
+      if (!result.isSuccess && (result.errorMessage != null && !result.errorMessage!.toLowerCase().contains('cancel'))) {
+        result = await ScannerService.pickFromCamera();
+      }
+
       if (result.isSuccess && result.imagePaths.isNotEmpty) {
         final path = result.imagePaths.first;
         setState(() {
@@ -310,9 +315,9 @@ Diperiksa via MaoneArt Scanner & e-Samsat
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                       ),
-                      icon: const Icon(Icons.camera_alt_rounded, size: 18, color: Colors.black),
+                      icon: const Icon(Icons.document_scanner_rounded, size: 18, color: Colors.black),
                       label: Text(
-                        'Foto Plat (Kamera)',
+                        'Pindai Plat (Scanner AI)',
                         style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 13),
                       ),
                     ),

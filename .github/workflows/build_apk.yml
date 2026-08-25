@@ -53,15 +53,15 @@ jobs:
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/heads/main') || startsWith(github.ref, 'refs/heads/master')
         with:
-          tag_name: v1.0.7
-          name: 'MaoneArt Scanner v1.0.7 (Release)'
+          tag_name: v1.0.8
+          name: 'MaoneArt Scanner v1.0.8 (Release)'
           body: |
-            ## 📄 MaoneArt Scanner & AI OCR - Android Release APK (v1.0.7)
+            ## 📄 MaoneArt Scanner & AI OCR - Android Release APK (v1.0.8)
             
+            - **Kamera Scanner AI Penuh**: Tombol pemindaian plat kini menggunakan Google ML Kit CamScanner UI lengkap dengan viewfinder pembidik, deteksi tepi plat otomatis, koreksi perspektif, dan auto-crop (bukan lagi kamera biasa).
             - **Integrasi Live Data e-Samsat Real-Time**: Terhubung langsung ke API e-Samsat (Bapenda Jabar SAMBARA, Banten, DIY) untuk menarik data resmi merk asli kendaraan, nama tipe, tahun, dan tagihan PKB/SWDKLLJ secara akurat.
             - **Deteksi Wilayah & Samsat Akurat**: Deteksi kota/kabupaten spesifik (Bekasi, Depok, Kota Bogor, Kab. Bogor, Tangerang, Jakarta, Bandung, dll).
             - **Bulan & Tahun STNK Interaktif**: Kotak bulan dan tahun STNK (misal 08.28) dapat diedit langsung secara manual atau otomatis dari scan kamera.
-            - **Offline Simulation Fallback**: Jika server samsat offline/data tidak ditemukan, otomatis beralih ke simulasi cerdas sesuai model kendaraan pilihan.
             
             Aplikasi Scanner Dokumen Pintar berbasis Flutter dengan deteksi kertas otomatis, auto-crop, perspektif transformasi, ekstraksi teks OCR offline, dan ekspor multi-page PDF!
           files: build/app/outputs/flutter-apk/app-release.apk
