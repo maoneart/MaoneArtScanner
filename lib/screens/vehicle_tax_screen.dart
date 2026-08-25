@@ -27,7 +27,10 @@ class _VehicleTaxScreenState extends ConsumerState<VehicleTaxScreen> {
   final TextEditingController _prefixController = TextEditingController(text: 'B');
   final TextEditingController _numberController = TextEditingController(text: '1234');
   final TextEditingController _suffixController = TextEditingController(text: 'ABC');
+  final TextEditingController _monthController = TextEditingController(text: '08');
+  final TextEditingController _yearController = TextEditingController(text: '28');
 
+  String _selectedVehicleType = 'Auto';
   bool _isLoading = false;
   VehicleTaxInfo? _taxInfo;
   String? _scannedImagePath;
@@ -41,6 +44,13 @@ class _VehicleTaxScreenState extends ConsumerState<VehicleTaxScreen> {
         _prefixController.text = parsed.prefix;
         _numberController.text = parsed.number;
         _suffixController.text = parsed.suffix;
+        if (parsed.monthYear != null && parsed.monthYear!.isNotEmpty) {
+          final cleanMY = parsed.monthYear!.replaceAll(RegExp(r'[^0-9]'), '');
+          if (cleanMY.length >= 4) {
+            _monthController.text = cleanMY.substring(0, 2);
+            _yearController.text = cleanMY.substring(2);
+          }
+        }
       }
     }
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -53,6 +63,8 @@ class _VehicleTaxScreenState extends ConsumerState<VehicleTaxScreen> {
     _prefixController.dispose();
     _numberController.dispose();
     _suffixController.dispose();
+    _monthController.dispose();
+    _yearController.dispose();
     super.dispose();
   }
 
@@ -71,6 +83,13 @@ class _VehicleTaxScreenState extends ConsumerState<VehicleTaxScreen> {
           _prefixController.text = parsed.prefix;
           _numberController.text = parsed.number;
           _suffixController.text = parsed.suffix;
+          if (parsed.monthYear != null && parsed.monthYear!.isNotEmpty) {
+            final cleanMY = parsed.monthYear!.replaceAll(RegExp(r'[^0-9]'), '');
+            if (cleanMY.length >= 4) {
+              _monthController.text = cleanMY.substring(0, 2);
+              _yearController.text = cleanMY.substring(2);
+            }
+          }
           await _checkTax();
         } else {
           setState(() => _isLoading = false);
@@ -78,7 +97,7 @@ class _VehicleTaxScreenState extends ConsumerState<VehicleTaxScreen> {
             MaoneArtModal.showAlertModal(
               context,
               title: 'Plat Tidak Terbaca Jelas',
-              message: 'Pastikan foto plat nomor kendaraan terlihat jelas, terang, dan tidak terpotong.',
+              message: 'Pastikan foto plat nomor kendaraan terlihat jelas, terang, dan tidak terpotong. Anda juga dapat mengetik plat dan bulan/tahun secara manual di atas.',
               icon: Icons.error_outline_rounded,
               iconColor: Colors.amber,
               buttonText: 'Coba Lagi',
@@ -106,6 +125,13 @@ class _VehicleTaxScreenState extends ConsumerState<VehicleTaxScreen> {
           _prefixController.text = parsed.prefix;
           _numberController.text = parsed.number;
           _suffixController.text = parsed.suffix;
+          if (parsed.monthYear != null && parsed.monthYear!.isNotEmpty) {
+            final cleanMY = parsed.monthYear!.replaceAll(RegExp(r'[^0-9]'), '');
+            if (cleanMY.length >= 4) {
+              _monthController.text = cleanMY.substring(0, 2);
+              _yearController.text = cleanMY.substring(2);
+            }
+          }
           await _checkTax();
         } else {
           setState(() => _isLoading = false);
@@ -113,7 +139,7 @@ class _VehicleTaxScreenState extends ConsumerState<VehicleTaxScreen> {
             MaoneArtModal.showAlertModal(
               context,
               title: 'Plat Tidak Terdeteksi',
-              message: 'Tidak ditemukan format plat nomor Indonesia pada gambar tersebut. Anda dapat memasukkan nomor plat secara manual.',
+              message: 'Tidak ditemukan format plat nomor Indonesia pada gambar tersebut. Anda dapat memasukkan nomor plat dan masa berlaku STNK secara manual.',
               icon: Icons.search_off_rounded,
               iconColor: Colors.amber,
               buttonText: 'Mengerti',
@@ -130,18 +156,26 @@ class _VehicleTaxScreenState extends ConsumerState<VehicleTaxScreen> {
     final prefix = _prefixController.text.trim().toUpperCase();
     final number = _numberController.text.trim();
     final suffix = _suffixController.text.trim().toUpperCase();
+    final month = _monthController.text.trim();
+    final year = _yearController.text.trim();
 
     if (prefix.isEmpty || number.isEmpty) return;
 
     setState(() => _isLoading = true);
 
+    final monthYearStr = (month.isNotEmpty && year.isNotEmpty) ? '$month.$year' : null;
+
     final plate = ParsedPlate(
       prefix: prefix,
       number: number,
       suffix: suffix,
+      monthYear: monthYearStr,
     );
 
-    final result = await VehicleTaxService.getVehicleTaxDetails(plate);
+    final result = await VehicleTaxService.getVehicleTaxDetails(
+      plate,
+      vehicleTypeOverride: _selectedVehicleType == 'Auto' ? null : _selectedVehicleType,
+    );
 
     if (mounted) {
       setState(() {
@@ -315,11 +349,11 @@ Diperiksa via MaoneArt Scanner & e-Samsat
                       'Pilih Cepat: ',
                       style: GoogleFonts.outfit(color: const Color(0xFF94A3B8), fontSize: 12, fontWeight: FontWeight.bold),
                     ),
-                    _buildPresetChip('B 1234 ABC'),
-                    _buildPresetChip('D 1999 ZK'),
-                    _buildPresetChip('B 3456 TZZ'),
-                    _buildPresetChip('L 8888 AA'),
-                    _buildPresetChip('AB 2026 JK'),
+                    _buildPresetChip('B 1234 ABC', month: '08', year: '28', labelNote: 'Aktif'),
+                    _buildPresetChip('D 1999 ZK', month: '12', year: '27', labelNote: 'Aktif'),
+                    _buildPresetChip('B 3456 TZZ', month: '05', year: '29', labelNote: 'Motor Aktif'),
+                    _buildPresetChip('L 8888 AA', month: '10', year: '26', labelNote: 'Aktif'),
+                    _buildPresetChip('AB 2026 JK', month: '03', year: '24', labelNote: 'Mati Pajak'),
                   ],
                 ),
               ),
@@ -478,23 +512,100 @@ Diperiksa via MaoneArt Scanner & e-Samsat
                     ),
                   ],
                 ),
-                const SizedBox(height: 2),
-                // Month / Year Subtext (e.g. 08.28)
-                Text(
-                  _taxInfo?.plateMonthYear ?? '08.29',
-                  style: GoogleFonts.robotoMono(
-                    color: Colors.white70,
-                    fontSize: 11,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 2,
+                // Month / Year Subtext (Editable: e.g. 08 . 28)
+                const SizedBox(height: 6),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.white24, width: 0.8),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.calendar_month_rounded, color: AppTheme.accentCyan, size: 12),
+                      const SizedBox(width: 5),
+                      Text(
+                        'STNK: ',
+                        style: GoogleFonts.outfit(color: Colors.white60, fontSize: 11, fontWeight: FontWeight.bold),
+                      ),
+                      // Bulan (01-12)
+                      SizedBox(
+                        width: 28,
+                        child: TextField(
+                          controller: _monthController,
+                          keyboardType: TextInputType.number,
+                          textAlign: TextAlign.center,
+                          maxLength: 2,
+                          style: GoogleFonts.robotoMono(
+                            color: Colors.white,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w900,
+                          ),
+                          decoration: const InputDecoration(
+                            counterText: '',
+                            border: InputBorder.none,
+                            isDense: true,
+                            contentPadding: EdgeInsets.zero,
+                            hintText: '08',
+                            hintStyle: TextStyle(color: Colors.white24),
+                          ),
+                          onChanged: (_) => _checkTax(),
+                        ),
+                      ),
+                      const Text(
+                        ' • ',
+                        style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold),
+                      ),
+                      // Tahun 5 Tahunan (misal 28 / 29)
+                      SizedBox(
+                        width: 28,
+                        child: TextField(
+                          controller: _yearController,
+                          keyboardType: TextInputType.number,
+                          textAlign: TextAlign.center,
+                          maxLength: 2,
+                          style: GoogleFonts.robotoMono(
+                            color: Colors.white,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w900,
+                          ),
+                          decoration: const InputDecoration(
+                            counterText: '',
+                            border: InputBorder.none,
+                            isDense: true,
+                            contentPadding: EdgeInsets.zero,
+                            hintText: '28',
+                            hintStyle: TextStyle(color: Colors.white24),
+                          ),
+                          onChanged: (_) => _checkTax(),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 12),
+
+          // Vehicle Type Selector (Auto / Sepeda Motor / Mobil Penumpang)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _buildTypeChip('Auto', Icons.auto_awesome_rounded),
+              const SizedBox(width: 8),
+              _buildTypeChip('Sepeda Motor', Icons.two_wheeler_rounded),
+              const SizedBox(width: 8),
+              _buildTypeChip('Mobil Penumpang', Icons.directions_car_filled_rounded),
+            ],
+          ),
+          const SizedBox(height: 8),
+
           Text(
-            '💡 Ketuk huruf/angka di atas untuk mengubah plat nomor',
+            '💡 Ketuk huruf plat atau kotak STNK (Bulan/Tahun) di atas untuk mengedit',
+            textAlign: TextAlign.center,
             style: GoogleFonts.outfit(color: const Color(0xFF94A3B8), fontSize: 11),
           ),
         ],
@@ -703,11 +814,54 @@ Diperiksa via MaoneArt Scanner & e-Samsat
     );
   }
 
-  Widget _buildPresetChip(String fullPlate) {
+  Widget _buildTypeChip(String title, IconData icon) {
+    final isSelected = _selectedVehicleType == title;
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedVehicleType = title;
+        });
+        _checkTax();
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        decoration: BoxDecoration(
+          color: isSelected ? AppTheme.accentCyan.withValues(alpha: 0.2) : Colors.white.withValues(alpha: 0.05),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: isSelected ? AppTheme.accentCyan : Colors.white24,
+            width: isSelected ? 1.5 : 0.8,
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              size: 13,
+              color: isSelected ? AppTheme.accentCyan : Colors.white60,
+            ),
+            const SizedBox(width: 4),
+            Text(
+              title,
+              style: GoogleFonts.outfit(
+                color: isSelected ? Colors.white : Colors.white70,
+                fontSize: 11,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPresetChip(String fullPlate, {String? month, String? year, String? labelNote}) {
     return Padding(
       padding: const EdgeInsets.only(right: 6),
       child: ActionChip(
-        label: Text(fullPlate),
+        label: Text(labelNote != null ? '$fullPlate ($labelNote)' : fullPlate),
         labelStyle: GoogleFonts.robotoMono(
           color: Colors.white,
           fontSize: 11,
@@ -722,6 +876,8 @@ Diperiksa via MaoneArt Scanner & e-Samsat
             _prefixController.text = parsed.prefix;
             _numberController.text = parsed.number;
             _suffixController.text = parsed.suffix;
+            if (month != null) _monthController.text = month;
+            if (year != null) _yearController.text = year;
             _checkTax();
           }
         },

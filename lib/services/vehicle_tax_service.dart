@@ -295,7 +295,7 @@ class VehicleTaxService {
     ),
   };
 
-  /// Ekstraksi plat nomor dari foto menggunakan Google ML Kit OCR
+  /// Ekstraksi plat nomor dari foto menggunakan Google ML Kit OCR dengan algoritma cerdas
   static Future<ParsedPlate?> scanPlateFromImage(String imagePath) async {
     final file = File(imagePath);
     if (!await file.exists()) return null;
@@ -304,6 +304,12 @@ class VehicleTaxService {
     try {
       final inputImage = InputImage.fromFilePath(imagePath);
       final RecognizedText recognized = await textRecognizer.processImage(inputImage);
+      
+      // 1. Ekstraksi dari seluruh blok dan baris
+      final fullParsed = parsePlateFromRecognizedText(recognized);
+      if (fullParsed != null) return fullParsed;
+
+      // 2. Fallback dari raw text
       return parsePlateFromText(recognized.text);
     } catch (_) {
       return null;
@@ -312,54 +318,152 @@ class VehicleTaxService {
     }
   }
 
-  /// Membaca dan menormalisasi string plat nomor (TNKB Indonesia)
-  static ParsedPlate? parsePlateFromText(String rawText) {
-    if (rawText.trim().isEmpty) return null;
+  /// Ekstraksi cerdas dari struktur baris & blok Google ML Kit
+  static ParsedPlate? parsePlateFromRecognizedText(RecognizedText recognized) {
+    String? foundPrefix;
+    String? foundNumber;
+    String? foundSuffix;
+    String? foundMonthYear;
 
-    // Bersihkan karakter aneh
-    final cleanText = rawText.toUpperCase().replaceAll(RegExp(r'[^A-Z0-9\s\.\-]'), ' ');
+    // Kumpulkan semua baris teks
+    final List<String> lines = [];
+    for (final block in recognized.blocks) {
+      for (final line in block.lines) {
+        final text = line.text.trim();
+        if (text.isNotEmpty) lines.add(text);
+      }
+    }
 
-    // 1. Regex lengkap TNKB (contoh: B 1234 ABC 08.28 atau D 5678 XY)
-    final fullRegex = RegExp(r'\b([A-Z]{1,2})\s*([0-9]{1,4})\s*([A-Z]{1,3})(?:\s*([0-9]{2}[\.\-][0-9]{2}))?\b');
-    final match = fullRegex.firstMatch(cleanText);
+    // 1. Cari baris bulan & tahun (misal: "08.28", "08-28", "08 28", "12.27")
+    final monthYearRegex = RegExp(r'\b(0[1-9]|1[0-2])[\s\.\:\-]([0-9]{2}|20[0-9]{2})\b');
+    for (final line in lines) {
+      final match = monthYearRegex.firstMatch(line);
+      if (match != null) {
+        final m = match.group(1)!;
+        final yRaw = match.group(2)!;
+        final y = yRaw.length == 4 ? yRaw.substring(2) : yRaw;
+        foundMonthYear = '$m.$y';
+        break;
+      }
+    }
 
-    if (match != null) {
-      final prefix = match.group(1)!;
-      final number = match.group(2)!;
-      final suffix = match.group(3)!;
-      final monthYear = match.group(4);
-
-      // Verifikasi prefix valid
-      if (_isValidPrefix(prefix)) {
+    // 2. Cari baris plat utama di setiap baris
+    for (final line in lines) {
+      final parsed = parsePlateFromText(line);
+      if (parsed != null) {
         return ParsedPlate(
-          prefix: prefix,
-          number: number,
-          suffix: suffix,
-          monthYear: monthYear,
+          prefix: parsed.prefix,
+          number: parsed.number,
+          suffix: parsed.suffix,
+          monthYear: foundMonthYear ?? parsed.monthYear,
         );
       }
     }
 
-    // 2. Fallback pencarian token jika ada spasi tidak beraturan
+    // 3. Gabungkan semua baris dan coba parse keseluruhan
+    final combined = lines.join(' ');
+    final parsedCombined = parsePlateFromText(combined);
+    if (parsedCombined != null) {
+      return ParsedPlate(
+        prefix: parsedCombined.prefix,
+        number: parsedCombined.number,
+        suffix: parsedCombined.suffix,
+        monthYear: foundMonthYear ?? parsedCombined.monthYear,
+      );
+    }
+
+    return null;
+  }
+
+  /// Normalisasi huruf OCR (koreksi angka yang salah terbaca sebagai huruf)
+  static String _cleanOcrLetters(String str) {
+    return str.toUpperCase()
+        .replaceAll('0', 'O')
+        .replaceAll('8', 'B')
+        .replaceAll('1', 'I')
+        .replaceAll('5', 'S')
+        .replaceAll('2', 'Z');
+  }
+
+  /// Normalisasi angka OCR (koreksi huruf yang salah terbaca di kolom angka)
+  static String _cleanOcrDigits(String str) {
+    return str.toUpperCase()
+        .replaceAll('O', '0')
+        .replaceAll('D', '0')
+        .replaceAll('Q', '0')
+        .replaceAll('I', '1')
+        .replaceAll('L', '1')
+        .replaceAll('|', '1')
+        .replaceAll('J', '1')
+        .replaceAll('Z', '2')
+        .replaceAll('E', '3')
+        .replaceAll('A', '4')
+        .replaceAll('S', '5')
+        .replaceAll('G', '6')
+        .replaceAll('B', '8')
+        .replaceAll('g', '9')
+        .replaceAll('q', '9');
+  }
+
+  /// Membaca dan menormalisasi string plat nomor (TNKB Indonesia)
+  static ParsedPlate? parsePlateFromText(String rawText) {
+    if (rawText.trim().isEmpty) return null;
+
+    // Bersihkan karakter selain huruf, angka, titik, strip
+    final cleanText = rawText.toUpperCase().replaceAll(RegExp(r'[^A-Z0-9\s\.\-]'), ' ');
+
+    // 1. Ekstraksi bulan & tahun jika ada
+    String? extractedMonthYear;
+    final monthYearMatch = RegExp(r'\b(0[1-9]|1[0-2])[\s\.\:\-]([0-9]{2}|20[0-9]{2})\b').firstMatch(cleanText);
+    if (monthYearMatch != null) {
+      final m = monthYearMatch.group(1)!;
+      final yRaw = monthYearMatch.group(2)!;
+      final y = yRaw.length == 4 ? yRaw.substring(2) : yRaw;
+      extractedMonthYear = '$m.$y';
+    }
+
+    // 2. Regex plat nomor Indonesia standar (misal: B 1234 ABC atau B1234ABC)
+    final fullRegex = RegExp(r'\b([A-Z0-9]{1,2})\s*([0-9A-Z]{1,4})\s*([A-Z0-9]{1,3})\b');
+    final matches = fullRegex.allMatches(cleanText);
+
+    for (final match in matches) {
+      final rawPrefix = match.group(1)!;
+      final rawNumber = match.group(2)!;
+      final rawSuffix = match.group(3)!;
+
+      final prefix = _cleanOcrLetters(rawPrefix);
+      final number = _cleanOcrDigits(rawNumber);
+      final suffix = _cleanOcrLetters(rawSuffix);
+
+      if (_isValidPrefix(prefix) && RegExp(r'^[0-9]{1,4}$').hasMatch(number) && RegExp(r'^[A-Z]{1,3}$').hasMatch(suffix)) {
+        return ParsedPlate(
+          prefix: prefix,
+          number: number,
+          suffix: suffix,
+          monthYear: extractedMonthYear,
+        );
+      }
+    }
+
+    // 3. Fallback token-based scanner
     final tokens = cleanText.split(RegExp(r'\s+')).where((t) => t.isNotEmpty).toList();
     for (int i = 0; i < tokens.length; i++) {
-      final token = tokens[i];
-      if (_isValidPrefix(token) && i + 1 < tokens.length) {
-        final nextToken = tokens[i + 1];
-        if (RegExp(r'^[0-9]{1,4}$').hasMatch(nextToken)) {
-          String suffix = '';
-          String? monthYear;
-          if (i + 2 < tokens.length && RegExp(r'^[A-Z]{1,3}$').hasMatch(tokens[i + 2])) {
-            suffix = tokens[i + 2];
-            if (i + 3 < tokens.length && RegExp(r'^[0-9]{2}[\.\-][0-9]{2}$').hasMatch(tokens[i + 3])) {
-              monthYear = tokens[i + 3];
+      final candPrefix = _cleanOcrLetters(tokens[i]);
+      if (_isValidPrefix(candPrefix) && i + 1 < tokens.length) {
+        final candNumber = _cleanOcrDigits(tokens[i + 1]);
+        if (RegExp(r'^[0-9]{1,4}$').hasMatch(candNumber)) {
+          String candSuffix = 'XX';
+          if (i + 2 < tokens.length) {
+            final testSuffix = _cleanOcrLetters(tokens[i + 2]);
+            if (RegExp(r'^[A-Z]{1,3}$').hasMatch(testSuffix)) {
+              candSuffix = testSuffix;
             }
           }
           return ParsedPlate(
-            prefix: token,
-            number: nextToken,
-            suffix: suffix.isNotEmpty ? suffix : 'XX',
-            monthYear: monthYear,
+            prefix: candPrefix,
+            number: candNumber,
+            suffix: candSuffix,
+            monthYear: extractedMonthYear,
           );
         }
       }
@@ -387,24 +491,87 @@ class VehicleTaxService {
     );
   }
 
-  /// Mengambil rincian data pajak dan estimasi biaya berdasarkan plat nomor
-  static Future<VehicleTaxInfo> getVehicleTaxDetails(ParsedPlate plate) async {
+  /// Mengambil rincian data pajak dan estimasi biaya berbasis data plat & bulan-tahun STNK
+  static Future<VehicleTaxInfo> getVehicleTaxDetails(
+    ParsedPlate plate, {
+    String? vehicleTypeOverride,
+  }) async {
     final meta = getRegionMeta(plate.prefix);
     final numberInt = int.tryParse(plate.number) ?? 1000;
 
-    // Menentukan jenis kendaraan berdasarkan format nomor plat Indonesia:
-    // Nomor 1-1999: Mobil Penumpang
-    // Nomor 2000-6999: Sepeda Motor
-    // Nomor 7000-7999: Bus
-    // Nomor 8000-8999: Truk / Kendaraan Barang
-    // Nomor 9000-9999: Kendaraan Khusus
-    final bool isMotorcycle = numberInt >= 2000 && numberInt <= 6999;
-    final bool isCar = numberInt < 2000;
+    // 1. Menentukan Jenis Kendaraan
+    bool isMotorcycle = numberInt >= 2000 && numberInt <= 6999;
+    bool isCar = numberInt < 2000;
 
-    final String vehicleType = isMotorcycle ? 'Sepeda Motor' : (isCar ? 'Mobil Penumpang' : 'Kendaraan Niaga');
+    if (vehicleTypeOverride != null) {
+      if (vehicleTypeOverride.toLowerCase().contains('motor')) {
+        isMotorcycle = true;
+        isCar = false;
+      } else if (vehicleTypeOverride.toLowerCase().contains('mobil')) {
+        isCar = true;
+        isMotorcycle = false;
+      }
+    }
+
+    final String vehicleType = isMotorcycle
+        ? 'Sepeda Motor'
+        : (isCar ? 'Mobil Penumpang' : 'Kendaraan Niaga');
+
+    // 2. Parsing Bulan & Tahun Jatuh Tempo STNK 5 Tahunan
+    final now = DateTime.now();
+    int stnkMonth = 8; // default Agustus
+    int stnkYear = now.year + 2; // default misal 2028
+
+    if (plate.monthYear != null && plate.monthYear!.isNotEmpty) {
+      final cleanMY = plate.monthYear!.replaceAll(RegExp(r'[^0-9]'), '');
+      if (cleanMY.length >= 4) {
+        final m = int.tryParse(cleanMY.substring(0, 2)) ?? now.month;
+        final ySub = int.tryParse(cleanMY.substring(2)) ?? (now.year % 100 + 2);
+        int y = ySub < 100 ? (2000 + ySub) : ySub;
+        stnkMonth = (m >= 1 && m <= 12) ? m : now.month;
+        stnkYear = y;
+      }
+    }
+
+    // 3. Tahun Pembuatan Model Kendaraan
+    int modelYear = stnkYear - 5;
+    if (modelYear < 2005) modelYear = 2018;
+    if (modelYear > now.year) modelYear = now.year;
+
+    // 4. Perhitungan Tanggal Jatuh Tempo PKB (Tahunan) dan STNK (5 Tahunan)
+    // Jatuh tempo STNK 5 tahunan persis pada bulan & tahun yang diketik
+    final DateTime stnkDueDate = DateTime(stnkYear, stnkMonth, 25);
+
+    // Jatuh tempo PKB tahunan berada pada bulan yang sama di tahun pajak berjalan
+    int taxDueYear = now.year;
+    // Jika bulan STNK tahun ini sudah lewat dari bulan sekarang, maka jatuh tempo tahun ini sudah lewat
+    if (now.month > stnkMonth || (now.month == stnkMonth && now.day > 25)) {
+      taxDueYear = now.year;
+    } else {
+      taxDueYear = now.year;
+    }
     
-    // Generator data realistis berbasis hash nomor plat
-    final randomSeed = plate.fullPlate.hashCode.abs();
+    // Jika STNK 5 tahunan sudah mati (misal tahun 2023), maka jatuh tempo PKB juga sudah mati sejak tahun tersebut
+    if (stnkYear < now.year) {
+      taxDueYear = stnkYear;
+    }
+
+    final DateTime taxDueDate = DateTime(taxDueYear, stnkMonth, 25);
+
+    // 5. Evaluasi Status Pajak (Aktif vs Terlambat/Mati)
+    final bool isTaxActive = taxDueDate.isAfter(now) && stnkDueDate.isAfter(now);
+
+    // Hitung durasi keterlambatan dalam bulan jika mati
+    int lateMonths = 0;
+    if (!isTaxActive) {
+      final diffDays = now.difference(taxDueDate).inDays;
+      lateMonths = (diffDays / 30).ceil();
+      if (lateMonths < 1) lateMonths = 1;
+      if (lateMonths > 24) lateMonths = 24; // Maksimal denda 24 bulan (UU Pajak Daerah)
+    }
+
+    // 6. Generator Merek & Tipe Kendaraan Realistis
+    final randomSeed = (plate.fullPlate + vehicleType).hashCode.abs();
     final random = Random(randomSeed);
 
     final List<String> motorBrands = ['Honda', 'Yamaha', 'Suzuki', 'Kawasaki', 'Vespa'];
@@ -416,50 +583,38 @@ class VehicleTaxService {
     final brand = isMotorcycle ? motorBrands[random.nextInt(motorBrands.length)] : carBrands[random.nextInt(carBrands.length)];
     final model = isMotorcycle ? motorModels[random.nextInt(motorModels.length)] : carModels[random.nextInt(carModels.length)];
     final color = colors[random.nextInt(colors.length)];
-
-    final int modelYear = 2018 + (random.nextInt(7)); // 2018 - 2024
     final int cc = isMotorcycle ? (110 + (random.nextInt(3) * 25)) : (1200 + (random.nextInt(4) * 300));
 
-    // Perhitungan PKB & SWDKLLJ (Sesuai tarif Samsat)
+    // 7. Tarif PKB Pokok & SWDKLLJ
     int pkbPokok;
     int swdkllj;
     if (isMotorcycle) {
-      swdkllj = 35000; // SWDKLLJ Motor
-      pkbPokok = 220000 + ((modelYear - 2018) * 35000) + (cc * 500);
+      swdkllj = 35000; // SWDKLLJ Motor R2
+      pkbPokok = 220000 + ((modelYear - 2015) * 25000) + (cc * 400);
     } else {
-      swdkllj = 143000; // SWDKLLJ Mobil
-      pkbPokok = 2400000 + ((modelYear - 2018) * 450000) + (cc * 500);
+      swdkllj = 143000; // SWDKLLJ Mobil R4
+      pkbPokok = 2400000 + ((modelYear - 2015) * 350000) + (cc * 400);
     }
 
-    // Tanggal Jatuh Tempo
-    final now = DateTime.now();
-    final int monthOffset = (random.nextInt(12) + 1);
-    final int dayOffset = (random.nextInt(28) + 1);
-
-    // Variasi status pajak: 75% aktif, 25% terlambat untuk simulasi
-    final bool isExpired = random.nextDouble() < 0.25;
-    final DateTime taxDueDate = isExpired 
-        ? DateTime(now.year, monthOffset < now.month ? monthOffset : now.month - 1, dayOffset)
-        : DateTime(now.year, (now.month + (random.nextInt(6) + 1)) % 12 + 1, dayOffset);
-
-    final DateTime stnkDueDate = DateTime(modelYear + 5, taxDueDate.month, taxDueDate.day);
-    final bool isTaxActive = !isExpired && taxDueDate.isAfter(now);
-
+    // 8. Perhitungan Denda Akurat
     int pkbDenda = 0;
     int swdklljDenda = 0;
     if (!isTaxActive) {
-      pkbDenda = (pkbPokok * 0.25).round(); // Denda 25%
-      swdklljDenda = isMotorcycle ? 32000 : 100000;
+      // Denda PKB = PKB Pokok x 2% x Jumlah Bulan Terlambat (Maks 48%)
+      final double penaltyRate = (lateMonths * 0.02).clamp(0.02, 0.48);
+      pkbDenda = (pkbPokok * penaltyRate).round();
+      swdklljDenda = isMotorcycle ? (lateMonths > 3 ? 32000 : 16000) : (lateMonths > 3 ? 100000 : 50000);
     }
 
     final int totalTax = pkbPokok + swdkllj + pkbDenda + swdklljDenda;
+    final displayMonthYear = '${stnkMonth.toString().padLeft(2, '0')}.${(stnkYear % 100).toString().padLeft(2, '0')}';
 
     return VehicleTaxInfo(
       plateNumber: plate.fullPlate,
       prefixCode: plate.prefix,
       numberCode: plate.number,
       suffixCode: plate.suffix,
-      plateMonthYear: plate.monthYear ?? '${taxDueDate.month.toString().padLeft(2, '0')}.${(taxDueDate.year + 5).toString().substring(2)}',
+      plateMonthYear: displayMonthYear,
       regionName: meta.regionName,
       provinceName: meta.provinceName,
       vehicleType: vehicleType,
