@@ -300,7 +300,11 @@ class DocumentNotifier extends StateNotifier<DocumentListState> {
   }
 
   /// Generate & simpan path PDF untuk dokumen
-  Future<String?> generateAndSavePdf(String docId, {PaperSizeOption paperSize = PaperSizeOption.a4}) async {
+  Future<String?> generateAndSavePdf(
+    String docId, {
+    PaperSizeOption paperSize = PaperSizeOption.a4,
+    PdfExportMode mode = PdfExportMode.searchable,
+  }) async {
     final index = state.documents.indexWhere((d) => d.id == docId);
     if (index == -1) return null;
 
@@ -309,6 +313,8 @@ class DocumentNotifier extends StateNotifier<DocumentListState> {
       imagePaths: doc.pagePaths,
       title: doc.title,
       paperSize: paperSize,
+      mode: mode,
+      customOcrText: doc.ocrText,
     );
 
     if (pdfPath != null) {

@@ -22,6 +22,7 @@ class PdfPreviewScreen extends ConsumerStatefulWidget {
 
 class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
   PaperSizeOption _selectedPaper = PaperSizeOption.a4;
+  PdfExportMode _selectedMode = PdfExportMode.searchable;
   String? _generatedPdfPath;
   bool _isGenerating = false;
 
@@ -36,6 +37,7 @@ class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
     final path = await ref.read(documentProvider.notifier).generateAndSavePdf(
       widget.document.id,
       paperSize: _selectedPaper,
+      mode: _selectedMode,
     );
     if (mounted) {
       setState(() {
@@ -88,47 +90,95 @@ class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            // Paper Size Selection Bar
+            // Controls: Paper Size & PDF Mode
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: GlassContainer(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                borderRadius: 14,
-                child: Row(
-                  children: [
-                    const Icon(Icons.description_rounded, color: AppTheme.accentCyan, size: 18),
-                    const SizedBox(width: 10),
-                    Text(
-                      'Ukuran Kertas:',
-                      style: GoogleFonts.outfit(color: const Color(0xFF94A3B8), fontSize: 13),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: DropdownButtonHideUnderline(
-                        child: DropdownButton<PaperSizeOption>(
-                          value: _selectedPaper,
-                          dropdownColor: AppTheme.bgCard,
-                          icon: const Icon(Icons.keyboard_arrow_down_rounded, color: AppTheme.accentCyan, size: 18),
-                          items: PaperSizeOption.values.map((opt) {
-                            return DropdownMenuItem(
-                              value: opt,
-                              child: Text(
-                                opt.label,
-                                style: GoogleFonts.outfit(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600),
-                              ),
-                            );
-                          }).toList(),
-                          onChanged: (newVal) {
-                            if (newVal != null && newVal != _selectedPaper) {
-                              setState(() => _selectedPaper = newVal);
-                              _buildPdf();
-                            }
-                          },
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 6),
+              child: Column(
+                children: [
+                  // Mode Selection Bar (Searchable vs Word-style vs Pure Image)
+                  GlassContainer(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    borderRadius: 14,
+                    child: Row(
+                      children: [
+                        const Icon(Icons.auto_awesome_rounded, color: AppTheme.accentCyan, size: 18),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Mode PDF:',
+                          style: GoogleFonts.outfit(color: const Color(0xFF94A3B8), fontSize: 13),
                         ),
-                      ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: DropdownButtonHideUnderline(
+                            child: DropdownButton<PdfExportMode>(
+                              value: _selectedMode,
+                              isExpanded: true,
+                              dropdownColor: AppTheme.bgCard,
+                              icon: const Icon(Icons.keyboard_arrow_down_rounded, color: AppTheme.accentCyan, size: 18),
+                              items: PdfExportMode.values.map((mode) {
+                                return DropdownMenuItem(
+                                  value: mode,
+                                  child: Text(
+                                    mode.label,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: GoogleFonts.outfit(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600),
+                                  ),
+                                );
+                              }).toList(),
+                              onChanged: (newVal) {
+                                if (newVal != null && newVal != _selectedMode) {
+                                  setState(() => _selectedMode = newVal);
+                                  _buildPdf();
+                                }
+                              },
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(height: 8),
+                  // Paper Size Selection Bar
+                  GlassContainer(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    borderRadius: 14,
+                    child: Row(
+                      children: [
+                        const Icon(Icons.description_rounded, color: AppTheme.accentEmerald, size: 18),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Ukuran Kertas:',
+                          style: GoogleFonts.outfit(color: const Color(0xFF94A3B8), fontSize: 13),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: DropdownButtonHideUnderline(
+                            child: DropdownButton<PaperSizeOption>(
+                              value: _selectedPaper,
+                              dropdownColor: AppTheme.bgCard,
+                              icon: const Icon(Icons.keyboard_arrow_down_rounded, color: AppTheme.accentEmerald, size: 18),
+                              items: PaperSizeOption.values.map((opt) {
+                                return DropdownMenuItem(
+                                  value: opt,
+                                  child: Text(
+                                    opt.label,
+                                    style: GoogleFonts.outfit(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600),
+                                  ),
+                                );
+                              }).toList(),
+                              onChanged: (newVal) {
+                                if (newVal != null && newVal != _selectedPaper) {
+                                  setState(() => _selectedPaper = newVal);
+                                  _buildPdf();
+                                }
+                              },
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
 
