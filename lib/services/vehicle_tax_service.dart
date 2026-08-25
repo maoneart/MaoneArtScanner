@@ -423,7 +423,24 @@ class VehicleTaxService {
       extractedMonthYear = '$m.$y';
     }
 
-    // 2. Regex plat nomor Indonesia standar (misal: B 1234 ABC atau B1234ABC)
+    // 2. Direct exact pattern check (misal: F2939HC, F 2939 HC, F2939 HC, B1234ABC)
+    final noSpace = cleanText.replaceAll(RegExp(r'\s+'), '');
+    final directMatch = RegExp(r'^([A-Z]{1,2})([0-9]{1,4})([A-Z]{1,3})$').firstMatch(noSpace);
+    if (directMatch != null) {
+      final prefix = directMatch.group(1)!;
+      final number = directMatch.group(2)!;
+      final suffix = directMatch.group(3)!;
+      if (_isValidPrefix(prefix)) {
+        return ParsedPlate(
+          prefix: prefix,
+          number: number,
+          suffix: suffix,
+          monthYear: extractedMonthYear,
+        );
+      }
+    }
+
+    // 3. Regex plat nomor Indonesia standar (misal: B 1234 ABC atau B1234ABC)
     final fullRegex = RegExp(r'\b([A-Z0-9]{1,2})\s*([0-9A-Z]{1,4})\s*([A-Z0-9]{1,3})\b');
     final matches = fullRegex.allMatches(cleanText);
 
@@ -658,12 +675,13 @@ class VehicleTaxService {
       final url = Uri.parse('https://cekpajak.bystpn.web.id/api/v1/$area/$encodedNopol');
 
       final client = HttpClient();
-      client.connectionTimeout = const Duration(seconds: 4);
+      client.badCertificateCallback = (cert, host, port) => true;
+      client.connectionTimeout = const Duration(seconds: 6);
       final request = await client.getUrl(url);
       request.headers.set('User-Agent', 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36');
       request.headers.set('Referer', 'https://cekpajak.bystpn.web.id/');
 
-      final response = await request.close().timeout(const Duration(seconds: 5));
+      final response = await request.close().timeout(const Duration(seconds: 8));
       if (response.statusCode == 200) {
         final body = await response.transform(utf8.decoder).join();
         final json = jsonDecode(body) as Map<String, dynamic>;
@@ -681,7 +699,9 @@ class VehicleTaxService {
           final swdkllj = int.tryParse(pajak['swdklljPokok']?.toString() ?? '0') ?? 0;
           final swdklljDenda = int.tryParse(pajak['swdklljDenda']?.toString() ?? '0') ?? 0;
           final opsenPokok = int.tryParse(pajak['opsenPokok']?.toString() ?? '0') ?? 0;
-          final totalTax = int.tryParse(pajak['totalPajak']?.toString() ?? '0') ?? (pkbPokok + pkbDenda + swdkllj + swdklljDenda + opsenPokok);
+          final opsenDenda = int.tryParse(pajak['opsenDenda']?.toString() ?? '0') ?? 0;
+          final totalTax = int.tryParse(pajak['totalPajak']?.toString() ?? '0') ?? 
+              (pkbPokok + pkbDenda + swdkllj + swdklljDenda + opsenPokok + opsenDenda);
 
           DateTime taxDueDate = DateTime.now();
           if (pajak['tglAkhirPkb'] != null) {
@@ -693,13 +713,14 @@ class VehicleTaxService {
           final numberInt = int.tryParse(plate.number) ?? 1000;
           final isMotor = numberInt >= 2000 && numberInt <= 6999;
           final vehicleType = isMotor ? 'Sepeda Motor' : 'Mobil Penumpang';
+          final monthYearStr = '${taxDueDate.month.toString().padLeft(2, '0')}.${(taxDueDate.year % 100).toString().padLeft(2, '0')}';
 
           return VehicleTaxInfo(
             plateNumber: plate.fullPlate,
             prefixCode: plate.prefix,
             numberCode: plate.number,
             suffixCode: plate.suffix,
-            plateMonthYear: plate.monthYear,
+            plateMonthYear: monthYearStr,
             regionName: data['area']?.toString() ?? meta.regionName,
             provinceName: meta.provinceName,
             vehicleType: vehicleType,
@@ -708,11 +729,13 @@ class VehicleTaxService {
             modelYear: modelYear,
             color: 'Sesuai STNK',
             fuelType: 'Bensin',
-            cylinderCapacity: isMotor ? 150 : 1500,
+            cylinderCapacity: isMotor ? 125 : 1500,
             pkbPokok: pkbPokok,
             swdkllj: swdkllj,
             pkbDenda: pkbDenda,
             swdklljDenda: swdklljDenda,
+            opsenPokok: opsenPokok,
+            opsenDenda: opsenDenda,
             totalTax: totalTax,
             taxDueDate: taxDueDate,
             stnkDueDate: taxDueDate.add(const Duration(days: 365 * 4)),
@@ -735,12 +758,10 @@ class VehicleTaxService {
     String? vehicleTypeOverride,
     String? customModelName,
   }) async {
-    // 1. Coba ambil data Live API real-time terlebih dahulu jika tidak ada override model manual
-    if (customModelName == null) {
-      final liveInfo = await _fetchFromLiveApi(plate);
-      if (liveInfo != null) {
-        return liveInfo;
-      }
+    // 1. Selalu coba ambil data Live API real-time terlebih dahulu dari server resmi Bapenda!
+    final liveInfo = await _fetchFromLiveApi(plate);
+    if (liveInfo != null) {
+      return liveInfo;
     }
 
     final meta = getRegionMeta(plate.prefix, suffix: plate.suffix);

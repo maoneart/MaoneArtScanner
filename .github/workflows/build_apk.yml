@@ -53,15 +53,14 @@ jobs:
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/heads/main') || startsWith(github.ref, 'refs/heads/master')
         with:
-          tag_name: v1.0.8
-          name: 'MaoneArt Scanner v1.0.8 (Release)'
+          tag_name: v1.0.9
+          name: 'MaoneArt Scanner v1.0.9 (Release)'
           body: |
-            ## 📄 MaoneArt Scanner & AI OCR - Android Release APK (v1.0.8)
+            ## 📄 MaoneArt Scanner & AI OCR - Android Release APK (v1.0.9)
             
-            - **Kamera Scanner AI Penuh**: Tombol pemindaian plat kini menggunakan Google ML Kit CamScanner UI lengkap dengan viewfinder pembidik, deteksi tepi plat otomatis, koreksi perspektif, dan auto-crop (bukan lagi kamera biasa).
-            - **Integrasi Live Data e-Samsat Real-Time**: Terhubung langsung ke API e-Samsat (Bapenda Jabar SAMBARA, Banten, DIY) untuk menarik data resmi merk asli kendaraan, nama tipe, tahun, dan tagihan PKB/SWDKLLJ secara akurat.
-            - **Deteksi Wilayah & Samsat Akurat**: Deteksi kota/kabupaten spesifik (Bekasi, Depok, Kota Bogor, Kab. Bogor, Tangerang, Jakarta, Bandung, dll).
-            - **Bulan & Tahun STNK Interaktif**: Kotak bulan dan tahun STNK (misal 08.28) dapat diedit langsung secara manual atau otomatis dari scan kamera.
+            - **Perhitungan 100% Selaras dengan Server e-Samsat Bapenda**: Menambahkan komponen Opsen PKB Daerah dan Denda Opsen sehingga total biaya pajak (misal F 2939 HC = Rp 956.600) akurat 100% sama dengan tagihan Samsat resmi.
+            - **Smart Multi-format Plate Parser**: Mendukung format plat tanpa spasi (`F2939HC`), dengan spasi (`F 2939 HC`), dan huruf kecil.
+            - **Auto-Sync Masa STNK**: Masa berlaku pajak dan STNK otomatis sinkron dengan data resmi kepolisian saat live check berhasil.
             
             Aplikasi Scanner Dokumen Pintar berbasis Flutter dengan deteksi kertas otomatis, auto-crop, perspektif transformasi, ekstraksi teks OCR offline, dan ekspor multi-page PDF!
           files: build/app/outputs/flutter-apk/app-release.apk

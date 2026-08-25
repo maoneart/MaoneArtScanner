@@ -165,7 +165,10 @@ class _VehicleTaxScreenState extends ConsumerState<VehicleTaxScreen> {
     final month = _monthController.text.trim();
     final year = _yearController.text.trim();
 
-    if (prefix.isEmpty || number.isEmpty) return;
+    if (prefix.isEmpty || number.isEmpty) {
+      if (mounted) setState(() => _isLoading = false);
+      return;
+    }
 
     setState(() => _isLoading = true);
 
@@ -178,17 +181,30 @@ class _VehicleTaxScreenState extends ConsumerState<VehicleTaxScreen> {
       monthYear: monthYearStr,
     );
 
-    final result = await VehicleTaxService.getVehicleTaxDetails(
-      plate,
-      vehicleTypeOverride: _selectedVehicleType == 'Auto' ? null : _selectedVehicleType,
-      customModelName: _selectedModel,
-    );
+    try {
+      final result = await VehicleTaxService.getVehicleTaxDetails(
+        plate,
+        vehicleTypeOverride: _selectedVehicleType == 'Auto' ? null : _selectedVehicleType,
+        customModelName: _selectedModel,
+      );
 
-    if (mounted) {
-      setState(() {
-        _taxInfo = result;
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _taxInfo = result;
+          _isLoading = false;
+          if (result.isLiveApiData && result.plateMonthYear != null && result.plateMonthYear!.contains('.')) {
+            final parts = result.plateMonthYear!.split('.');
+            if (parts.length >= 2) {
+              _monthController.text = parts[0];
+              _yearController.text = parts[1];
+            }
+          }
+        });
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
@@ -763,8 +779,10 @@ Diperiksa via MaoneArt Scanner & e-Samsat
               ),
               const Divider(color: Colors.white12, height: 20),
               _buildInfoRow('PKB Pokok (Pajak Kendaraan)', info.formattedPkbPokok),
+              if (info.opsenPokok > 0) _buildInfoRow('Opsen PKB (Daerah)', info.formattedOpsenPokok),
               _buildInfoRow('SWDKLLJ (Jasa Raharja)', info.formattedSwdkllj),
               if (info.pkbDenda > 0) _buildInfoRow('Denda PKB', info.formattedPkbDenda, isDanger: true),
+              if (info.opsenDenda > 0) _buildInfoRow('Denda Opsen PKB', info.formattedOpsenDenda, isDanger: true),
               if (info.swdklljDenda > 0) _buildInfoRow('Denda SWDKLLJ', info.formattedSwdklljDenda, isDanger: true),
               const Divider(color: Colors.white24, height: 24),
               Row(

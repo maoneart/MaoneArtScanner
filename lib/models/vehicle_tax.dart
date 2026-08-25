@@ -21,6 +21,8 @@ class VehicleTaxInfo {
   final int swdkllj;
   final int pkbDenda;
   final int swdklljDenda;
+  final int opsenPokok;
+  final int opsenDenda;
   final int totalTax;
 
   final DateTime taxDueDate; // Jatuh tempo tahunan
@@ -50,6 +52,8 @@ class VehicleTaxInfo {
     required this.swdkllj,
     required this.pkbDenda,
     required this.swdklljDenda,
+    this.opsenPokok = 0,
+    this.opsenDenda = 0,
     required this.totalTax,
     required this.taxDueDate,
     required this.stnkDueDate,
@@ -94,6 +98,8 @@ class VehicleTaxInfo {
   String get formattedSwdkllj => _safeCurrency(swdkllj);
   String get formattedPkbDenda => _safeCurrency(pkbDenda);
   String get formattedSwdklljDenda => _safeCurrency(swdklljDenda);
+  String get formattedOpsenPokok => _safeCurrency(opsenPokok);
+  String get formattedOpsenDenda => _safeCurrency(opsenDenda);
   String get formattedTotalTax => _safeCurrency(totalTax);
 
   String get formattedTaxDueDate => _safeDate(taxDueDate);
