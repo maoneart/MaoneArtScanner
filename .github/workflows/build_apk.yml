@@ -53,14 +53,14 @@ jobs:
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/heads/main') || startsWith(github.ref, 'refs/heads/master')
         with:
-          tag_name: v1.0.9
-          name: 'MaoneArt Scanner v1.0.9 (Release)'
+          tag_name: v1.1.0
+          name: 'MaoneArt Scanner v1.1.0 (Release)'
           body: |
-            ## 📄 MaoneArt Scanner & AI OCR - Android Release APK (v1.0.9)
+            ## 📄 MaoneArt Scanner & AI OCR - Android Release APK (v1.1.0)
             
-            - **Perhitungan 100% Selaras dengan Server e-Samsat Bapenda**: Menambahkan komponen Opsen PKB Daerah dan Denda Opsen sehingga total biaya pajak (misal F 2939 HC = Rp 956.600) akurat 100% sama dengan tagihan Samsat resmi.
-            - **Smart Multi-format Plate Parser**: Mendukung format plat tanpa spasi (`F2939HC`), dengan spasi (`F 2939 HC`), dan huruf kecil.
-            - **Auto-Sync Masa STNK**: Masa berlaku pajak dan STNK otomatis sinkron dengan data resmi kepolisian saat live check berhasil.
+            - **Desain Baru Scanner FAB (Glassmorphic Floating Cyber Dock)**: Antarmuka tombol Scan Dokumen dan Impor Galeri baru yang jauh lebih keren, modern, bercahaya neon, dan beranimasi mikro elegan.
+            - **Antarmuka Cek Pajak Bersih & 100% Otomatis**: Menghapus tombol manual pilihan motor/mobil dan tipe kendaraan karena sistem sudah 100% otomatis mengambil data asli server e-Samsat.
+            - **Hidden Mode Shortcut Pajak Kendaraan**: Banner besar di beranda dihilangkan untuk ruang daftar dokumen yang lega, menu Cek Pajak kini diakses melalui ikon mobil elegan di AppBar atas.
             
             Aplikasi Scanner Dokumen Pintar berbasis Flutter dengan deteksi kertas otomatis, auto-crop, perspektif transformasi, ekstraksi teks OCR offline, dan ekspor multi-page PDF!
           files: build/app/outputs/flutter-apk/app-release.apk
