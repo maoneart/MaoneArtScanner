@@ -240,15 +240,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     },
                   ),
                   IconButton(
-                    icon: const Icon(Icons.directions_car_rounded, color: AppTheme.accentEmerald, size: 22),
-                    tooltip: 'Cek Pajak Kendaraan (Plat Nomor)',
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(builder: (_) => const VehicleTaxScreen()),
-                      );
-                    },
-                  ),
-                  IconButton(
                     icon: Icon(
                       state.isGridView ? Icons.view_list_rounded : Icons.grid_view_rounded,
                       color: AppTheme.accentCyan,
@@ -257,9 +248,67 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     tooltip: state.isGridView ? 'Tampilan List' : 'Tampilan Grid',
                     onPressed: () => ref.read(documentProvider.notifier).toggleViewMode(),
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.info_outline_rounded, color: Colors.white70, size: 20),
-                    onPressed: _showInfoModal,
+                  PopupMenuButton<String>(
+                    icon: const Icon(Icons.more_vert_rounded, color: Colors.white70, size: 22),
+                    tooltip: 'Menu Lainnya',
+                    color: const Color(0xFF0F172A),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      side: BorderSide(color: Colors.white.withValues(alpha: 0.15), width: 1),
+                    ),
+                    offset: const Offset(0, 48),
+                    onSelected: (value) {
+                      if (value == 'tax') {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => const VehicleTaxScreen()),
+                        );
+                      } else if (value == 'about') {
+                        _showInfoModal();
+                      }
+                    },
+                    itemBuilder: (context) => [
+                      PopupMenuItem<String>(
+                        value: 'tax',
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                color: AppTheme.accentEmerald.withValues(alpha: 0.2),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: const Icon(Icons.directions_car_rounded, color: AppTheme.accentEmerald, size: 18),
+                            ),
+                            const SizedBox(width: 12),
+                            Text(
+                              'Cek Pajak Kendaraan',
+                              style: GoogleFonts.outfit(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const PopupMenuDivider(height: 1),
+                      PopupMenuItem<String>(
+                        value: 'about',
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                color: AppTheme.accentCyan.withValues(alpha: 0.2),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: const Icon(Icons.info_outline_rounded, color: AppTheme.accentCyan, size: 18),
+                            ),
+                            const SizedBox(width: 12),
+                            Text(
+                              'Tentang Aplikasi',
+                              style: GoogleFonts.outfit(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
