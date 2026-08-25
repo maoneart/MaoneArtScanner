@@ -476,27 +476,171 @@ class VehicleTaxService {
     return _regionMap.containsKey(prefix) || RegExp(r'^[A-Z]{1,2}$').hasMatch(prefix);
   }
 
-  /// Mendapatkan metadata wilayah berdasarkan kode plat
-  static RegionMeta getRegionMeta(String prefix) {
-    final clean = prefix.toUpperCase().trim();
-    if (_regionMap.containsKey(clean)) {
-      return _regionMap[clean]!;
+  /// Mendapatkan metadata wilayah & Samsat berdasarkan kode prefix & suffix plat
+  static RegionMeta getRegionMeta(String prefix, {String? suffix}) {
+    final cleanPrefix = prefix.toUpperCase().trim();
+    final cleanSuffix = suffix?.toUpperCase().trim() ?? '';
+    final firstSuffix = cleanSuffix.isNotEmpty ? cleanSuffix[0] : '';
+
+    if (cleanPrefix == 'B') {
+      if (firstSuffix == 'K') {
+        return const RegionMeta(
+          prefix: 'B',
+          regionName: 'Kota / Kab. Bekasi',
+          provinceName: 'Jawa Barat',
+          portalUrl: 'https://bapenda.jabarprov.go.id/sambara/',
+          samsatName: 'Samsat Kota / Kab. Bekasi (SAMBARA / Sapawarga)',
+        );
+      } else if (firstSuffix == 'Z') {
+        return const RegionMeta(
+          prefix: 'B',
+          regionName: 'Kota Depok (Depok / Cinere)',
+          provinceName: 'Jawa Barat',
+          portalUrl: 'https://bapenda.jabarprov.go.id/sambara/',
+          samsatName: 'Samsat Depok / Cinere (SAMBARA)',
+        );
+      } else if (firstSuffix == 'W' || firstSuffix == 'C' || firstSuffix == 'V' || firstSuffix == 'N') {
+        return const RegionMeta(
+          prefix: 'B',
+          regionName: 'Kota / Kab. Tangerang & Tangsel',
+          provinceName: 'Banten',
+          portalUrl: 'https://ditlantas.banten.polri.go.id/',
+          samsatName: 'Samsat Cikokol / Serpong / Ciputat',
+        );
+      } else if (firstSuffix == 'U' || firstSuffix == 'B') {
+        return const RegionMeta(
+          prefix: 'B',
+          regionName: 'Jakarta Utara / Barat',
+          provinceName: 'DKI Jakarta',
+          portalUrl: 'https://samsat-pkb2.jakarta.go.id/',
+          samsatName: 'Bapenda DKI Jakarta / e-Samsat Jakarta',
+        );
+      } else if (firstSuffix == 'P' || firstSuffix == 'S') {
+        return const RegionMeta(
+          prefix: 'B',
+          regionName: 'Jakarta Selatan',
+          provinceName: 'DKI Jakarta',
+          portalUrl: 'https://samsat-pkb2.jakarta.go.id/',
+          samsatName: 'Bapenda DKI Jakarta / e-Samsat Jakarta',
+        );
+      } else if (firstSuffix == 'T' || firstSuffix == 'E') {
+        return const RegionMeta(
+          prefix: 'B',
+          regionName: 'Jakarta Timur',
+          provinceName: 'DKI Jakarta',
+          portalUrl: 'https://samsat-pkb2.jakarta.go.id/',
+          samsatName: 'Bapenda DKI Jakarta / e-Samsat Jakarta',
+        );
+      } else if (firstSuffix == 'Q' || firstSuffix == 'H') {
+        return const RegionMeta(
+          prefix: 'B',
+          regionName: 'Jakarta Pusat',
+          provinceName: 'DKI Jakarta',
+          portalUrl: 'https://samsat-pkb2.jakarta.go.id/',
+          samsatName: 'Bapenda DKI Jakarta / e-Samsat Jakarta',
+        );
+      }
+    } else if (cleanPrefix == 'F') {
+      if (firstSuffix == 'A' || firstSuffix == 'B' || firstSuffix == 'C' || firstSuffix == 'D' || firstSuffix == 'E') {
+        return const RegionMeta(
+          prefix: 'F',
+          regionName: 'Kota Bogor',
+          provinceName: 'Jawa Barat',
+          portalUrl: 'https://bapenda.jabarprov.go.id/sambara/',
+          samsatName: 'Samsat Kota Bogor (SAMBARA / Sapawarga)',
+        );
+      } else if (firstSuffix == 'S' || firstSuffix == 'T' || firstSuffix == 'U' || firstSuffix == 'V') {
+        return const RegionMeta(
+          prefix: 'F',
+          regionName: 'Kota / Kab. Sukabumi',
+          provinceName: 'Jawa Barat',
+          portalUrl: 'https://bapenda.jabarprov.go.id/sambara/',
+          samsatName: 'Samsat Sukabumi (SAMBARA)',
+        );
+      } else if (firstSuffix == 'W' || firstSuffix == 'X' || firstSuffix == 'Y' || firstSuffix == 'Z') {
+        return const RegionMeta(
+          prefix: 'F',
+          regionName: 'Kabupaten Cianjur',
+          provinceName: 'Jawa Barat',
+          portalUrl: 'https://bapenda.jabarprov.go.id/sambara/',
+          samsatName: 'Samsat Cianjur (SAMBARA)',
+        );
+      } else {
+        return const RegionMeta(
+          prefix: 'F',
+          regionName: 'Kabupaten Bogor (Cibinong / Cileungsi)',
+          provinceName: 'Jawa Barat',
+          portalUrl: 'https://bapenda.jabarprov.go.id/sambara/',
+          samsatName: 'Samsat Kab. Bogor / Cibinong (SAMBARA)',
+        );
+      }
+    } else if (cleanPrefix == 'D') {
+      if (firstSuffix.compareTo('M') <= 0 && firstSuffix.isNotEmpty) {
+        return const RegionMeta(
+          prefix: 'D',
+          regionName: 'Kota Bandung',
+          provinceName: 'Jawa Barat',
+          portalUrl: 'https://bapenda.jabarprov.go.id/sambara/',
+          samsatName: 'Samsat Kota Bandung (SAMBARA)',
+        );
+      } else {
+        return const RegionMeta(
+          prefix: 'D',
+          regionName: 'Kab. Bandung / Kota Cimahi / Bandung Barat',
+          provinceName: 'Jawa Barat',
+          portalUrl: 'https://bapenda.jabarprov.go.id/sambara/',
+          samsatName: 'Samsat Soreang / Cimahi (SAMBARA)',
+        );
+      }
     }
+
+    if (_regionMap.containsKey(cleanPrefix)) {
+      return _regionMap[cleanPrefix]!;
+    }
+
     return RegionMeta(
-      prefix: clean,
-      regionName: 'Wilayah $clean (Indonesia)',
+      prefix: cleanPrefix,
+      regionName: 'Wilayah $cleanPrefix (Indonesia)',
       provinceName: 'Indonesia',
-      portalUrl: 'https://samsatdigital.id/', // SIGNAL Nasional
+      portalUrl: 'https://samsatdigital.id/',
       samsatName: 'Samsat Digital Nasional (SIGNAL)',
     );
   }
+
+  /// Spesifikasi model kendaraan populer Indonesia
+  static final Map<String, VehiclePresetSpec> vehiclePresets = {
+    // LCGC & City Car
+    'Daihatsu Ayla': const VehiclePresetSpec(brand: 'Daihatsu', model: 'Ayla 1.2 R CVT', cc: 1197, pkbBase: 1650000, isMotorcycle: false),
+    'Toyota Agya': const VehiclePresetSpec(brand: 'Toyota', model: 'Agya 1.2 GR Sport', cc: 1197, pkbBase: 1750000, isMotorcycle: false),
+    'Honda Brio': const VehiclePresetSpec(brand: 'Honda', model: 'Brio Satya 1.2 E / RS', cc: 1198, pkbBase: 1850000, isMotorcycle: false),
+    'Toyota Calya': const VehiclePresetSpec(brand: 'Toyota', model: 'Calya 1.2 G MT/AT', cc: 1197, pkbBase: 1800000, isMotorcycle: false),
+    'Daihatsu Sigra': const VehiclePresetSpec(brand: 'Daihatsu', model: 'Sigra 1.2 R Deluxe', cc: 1197, pkbBase: 1700000, isMotorcycle: false),
+
+    // MPV & SUV
+    'Toyota Avanza': const VehiclePresetSpec(brand: 'Toyota', model: 'Avanza 1.5 G CVT', cc: 1496, pkbBase: 2950000, isMotorcycle: false),
+    'Daihatsu Xenia': const VehiclePresetSpec(brand: 'Daihatsu', model: 'Xenia 1.5 R CVT', cc: 1496, pkbBase: 2800000, isMotorcycle: false),
+    'Mitsubishi Xpander': const VehiclePresetSpec(brand: 'Mitsubishi', model: 'Xpander Ultimate', cc: 1499, pkbBase: 3400000, isMotorcycle: false),
+    'Toyota Innova Zenix': const VehiclePresetSpec(brand: 'Toyota', model: 'Innova Zenix 2.0 V Hybrid', cc: 1987, pkbBase: 5600000, isMotorcycle: false),
+    'Mitsubishi Pajero Sport': const VehiclePresetSpec(brand: 'Mitsubishi', model: 'Pajero Sport Dakar 4x2', cc: 2442, pkbBase: 7800000, isMotorcycle: false),
+    'Toyota Fortuner': const VehiclePresetSpec(brand: 'Toyota', model: 'Fortuner 2.8 GR Sport', cc: 2755, pkbBase: 8200000, isMotorcycle: false),
+
+    // Sepeda Motor Populer
+    'Honda BeAT': const VehiclePresetSpec(brand: 'Honda', model: 'BeAT Street eSP 110', cc: 110, pkbBase: 225000, isMotorcycle: true),
+    'Honda Scoopy': const VehiclePresetSpec(brand: 'Honda', model: 'Scoopy Prestige SmartKey', cc: 110, pkbBase: 245000, isMotorcycle: true),
+    'Honda Vario 160': const VehiclePresetSpec(brand: 'Honda', model: 'Vario 160 ABS', cc: 156, pkbBase: 320000, isMotorcycle: true),
+    'Yamaha NMAX 155': const VehiclePresetSpec(brand: 'Yamaha', model: 'NMAX 155 Connected / Turbo', cc: 155, pkbBase: 395000, isMotorcycle: true),
+    'Yamaha Aerox 155': const VehiclePresetSpec(brand: 'Yamaha', model: 'Aerox 155 CyberCity', cc: 155, pkbBase: 385000, isMotorcycle: true),
+    'Honda PCX 160': const VehiclePresetSpec(brand: 'Honda', model: 'PCX 160 RoadSync', cc: 156, pkbBase: 430000, isMotorcycle: true),
+    'Kawasaki KLX 150': const VehiclePresetSpec(brand: 'Kawasaki', model: 'KLX 150 SE Extreme', cc: 144, pkbBase: 410000, isMotorcycle: true),
+  };
 
   /// Mengambil rincian data pajak dan estimasi biaya berbasis data plat & bulan-tahun STNK
   static Future<VehicleTaxInfo> getVehicleTaxDetails(
     ParsedPlate plate, {
     String? vehicleTypeOverride,
+    String? customModelName,
   }) async {
-    final meta = getRegionMeta(plate.prefix);
+    final meta = getRegionMeta(plate.prefix, suffix: plate.suffix);
     final numberInt = int.tryParse(plate.number) ?? 1000;
 
     // 1. Menentukan Jenis Kendaraan
@@ -512,10 +656,6 @@ class VehicleTaxService {
         isMotorcycle = false;
       }
     }
-
-    final String vehicleType = isMotorcycle
-        ? 'Sepeda Motor'
-        : (isCar ? 'Mobil Penumpang' : 'Kendaraan Niaga');
 
     // 2. Parsing Bulan & Tahun Jatuh Tempo STNK 5 Tahunan
     final now = DateTime.now();
@@ -539,19 +679,15 @@ class VehicleTaxService {
     if (modelYear > now.year) modelYear = now.year;
 
     // 4. Perhitungan Tanggal Jatuh Tempo PKB (Tahunan) dan STNK (5 Tahunan)
-    // Jatuh tempo STNK 5 tahunan persis pada bulan & tahun yang diketik
     final DateTime stnkDueDate = DateTime(stnkYear, stnkMonth, 25);
 
-    // Jatuh tempo PKB tahunan berada pada bulan yang sama di tahun pajak berjalan
     int taxDueYear = now.year;
-    // Jika bulan STNK tahun ini sudah lewat dari bulan sekarang, maka jatuh tempo tahun ini sudah lewat
     if (now.month > stnkMonth || (now.month == stnkMonth && now.day > 25)) {
       taxDueYear = now.year;
     } else {
       taxDueYear = now.year;
     }
     
-    // Jika STNK 5 tahunan sudah mati (misal tahun 2023), maka jatuh tempo PKB juga sudah mati sejak tahun tersebut
     if (stnkYear < now.year) {
       taxDueYear = stnkYear;
     }
@@ -561,46 +697,51 @@ class VehicleTaxService {
     // 5. Evaluasi Status Pajak (Aktif vs Terlambat/Mati)
     final bool isTaxActive = taxDueDate.isAfter(now) && stnkDueDate.isAfter(now);
 
-    // Hitung durasi keterlambatan dalam bulan jika mati
     int lateMonths = 0;
     if (!isTaxActive) {
       final diffDays = now.difference(taxDueDate).inDays;
       lateMonths = (diffDays / 30).ceil();
       if (lateMonths < 1) lateMonths = 1;
-      if (lateMonths > 24) lateMonths = 24; // Maksimal denda 24 bulan (UU Pajak Daerah)
+      if (lateMonths > 24) lateMonths = 24;
     }
 
-    // 6. Generator Merek & Tipe Kendaraan Realistis
-    final randomSeed = (plate.fullPlate + vehicleType).hashCode.abs();
-    final random = Random(randomSeed);
+    // 6. Pencocokan Merek, Model & Nilai PKB (Bisa Dipilih / Diketik Pengguna)
+    String brand = isMotorcycle ? 'Honda' : 'Toyota';
+    String model = isMotorcycle ? 'Vario 160 ABS' : 'Avanza 1.5 G CVT';
+    int cc = isMotorcycle ? 156 : 1496;
+    int pkbPokok = isMotorcycle ? 320000 : 2950000;
+    int swdkllj = isMotorcycle ? 35000 : 143000;
 
-    final List<String> motorBrands = ['Honda', 'Yamaha', 'Suzuki', 'Kawasaki', 'Vespa'];
-    final List<String> motorModels = ['Vario 160 ABS', 'BeAT Street eSP', 'NMAX 155 Connected', 'PCX 160', 'Scoopy Prestige', 'Aerox 155', 'KLX 150'];
-    final List<String> carBrands = ['Toyota', 'Honda', 'Daihatsu', 'Mitsubishi', 'Suzuki', 'Hyundai', 'Wuling'];
-    final List<String> carModels = ['Avanza 1.5 G CVT', 'Innova Zenix V Hybrid', 'Brio RS 1.2', 'HR-V 1.5 SE', 'Xpander Ultimate', 'Pajero Sport Dakar', 'Stargazer Prime'];
-    final List<String> colors = ['Hitam Metalik', 'Putih Mutiara', 'Abu-Abu Metalik', 'Merah Marun', 'Silver Metalik', 'Biru Tua'];
-
-    final brand = isMotorcycle ? motorBrands[random.nextInt(motorBrands.length)] : carBrands[random.nextInt(carBrands.length)];
-    final model = isMotorcycle ? motorModels[random.nextInt(motorModels.length)] : carModels[random.nextInt(carModels.length)];
-    final color = colors[random.nextInt(colors.length)];
-    final int cc = isMotorcycle ? (110 + (random.nextInt(3) * 25)) : (1200 + (random.nextInt(4) * 300));
-
-    // 7. Tarif PKB Pokok & SWDKLLJ
-    int pkbPokok;
-    int swdkllj;
-    if (isMotorcycle) {
-      swdkllj = 35000; // SWDKLLJ Motor R2
-      pkbPokok = 220000 + ((modelYear - 2015) * 25000) + (cc * 400);
-    } else {
-      swdkllj = 143000; // SWDKLLJ Mobil R4
-      pkbPokok = 2400000 + ((modelYear - 2015) * 350000) + (cc * 400);
+    if (customModelName != null && vehiclePresets.containsKey(customModelName)) {
+      final spec = vehiclePresets[customModelName]!;
+      brand = spec.brand;
+      model = spec.model;
+      cc = spec.cc;
+      isMotorcycle = spec.isMotorcycle;
+      isCar = !spec.isMotorcycle;
+      swdkllj = isMotorcycle ? 35000 : 143000;
+      pkbPokok = spec.pkbBase + ((modelYear - 2020) * (isMotorcycle ? 15000 : 150000));
+      if (pkbPokok < (isMotorcycle ? 180000 : 1200000)) pkbPokok = spec.pkbBase;
+    } else if (customModelName != null && customModelName.trim().isNotEmpty) {
+      model = customModelName.trim();
+      brand = customModelName.split(' ').first;
+      if (customModelName.toLowerCase().contains('ayla') || customModelName.toLowerCase().contains('agya')) {
+        brand = customModelName.toLowerCase().contains('ayla') ? 'Daihatsu' : 'Toyota';
+        cc = 1197;
+        pkbPokok = 1650000;
+        isMotorcycle = false;
+        swdkllj = 143000;
+      }
     }
 
-    // 8. Perhitungan Denda Akurat
+    final String vehicleType = isMotorcycle
+        ? 'Sepeda Motor'
+        : (isCar ? 'Mobil Penumpang' : 'Kendaraan Niaga');
+
+    // 7. Perhitungan Denda Akurat
     int pkbDenda = 0;
     int swdklljDenda = 0;
     if (!isTaxActive) {
-      // Denda PKB = PKB Pokok x 2% x Jumlah Bulan Terlambat (Maks 48%)
       final double penaltyRate = (lateMonths * 0.02).clamp(0.02, 0.48);
       pkbDenda = (pkbPokok * penaltyRate).round();
       swdklljDenda = isMotorcycle ? (lateMonths > 3 ? 32000 : 16000) : (lateMonths > 3 ? 100000 : 50000);
@@ -621,7 +762,7 @@ class VehicleTaxService {
       brand: brand,
       modelName: model,
       modelYear: modelYear,
-      color: color,
+      color: 'Hitam / Metalik',
       fuelType: 'Bensin',
       cylinderCapacity: cc,
       pkbPokok: pkbPokok,
@@ -636,4 +777,20 @@ class VehicleTaxService {
       officialSamsatName: meta.samsatName,
     );
   }
+}
+
+class VehiclePresetSpec {
+  final String brand;
+  final String model;
+  final int cc;
+  final int pkbBase;
+  final bool isMotorcycle;
+
+  const VehiclePresetSpec({
+    required this.brand,
+    required this.model,
+    required this.cc,
+    required this.pkbBase,
+    required this.isMotorcycle,
+  });
 }

@@ -31,6 +31,7 @@ class _VehicleTaxScreenState extends ConsumerState<VehicleTaxScreen> {
   final TextEditingController _yearController = TextEditingController(text: '28');
 
   String _selectedVehicleType = 'Auto';
+  String? _selectedModel;
   bool _isLoading = false;
   VehicleTaxInfo? _taxInfo;
   String? _scannedImagePath;
@@ -175,6 +176,7 @@ class _VehicleTaxScreenState extends ConsumerState<VehicleTaxScreen> {
     final result = await VehicleTaxService.getVehicleTaxDetails(
       plate,
       vehicleTypeOverride: _selectedVehicleType == 'Auto' ? null : _selectedVehicleType,
+      customModelName: _selectedModel,
     );
 
     if (mounted) {
@@ -349,11 +351,12 @@ Diperiksa via MaoneArt Scanner & e-Samsat
                       'Pilih Cepat: ',
                       style: GoogleFonts.outfit(color: const Color(0xFF94A3B8), fontSize: 12, fontWeight: FontWeight.bold),
                     ),
-                    _buildPresetChip('B 1234 ABC', month: '08', year: '28', labelNote: 'Aktif'),
-                    _buildPresetChip('D 1999 ZK', month: '12', year: '27', labelNote: 'Aktif'),
-                    _buildPresetChip('B 3456 TZZ', month: '05', year: '29', labelNote: 'Motor Aktif'),
-                    _buildPresetChip('L 8888 AA', month: '10', year: '26', labelNote: 'Aktif'),
-                    _buildPresetChip('AB 2026 JK', month: '03', year: '24', labelNote: 'Mati Pajak'),
+                    _buildPresetChip('B 1234 KZZ', month: '08', year: '28', model: 'Daihatsu Ayla', labelNote: 'Bekasi • Ayla'),
+                    _buildPresetChip('F 1999 AB', month: '12', year: '27', model: 'Toyota Avanza', labelNote: 'Kota Bogor • Avanza'),
+                    _buildPresetChip('F 5678 FBA', month: '05', year: '29', model: 'Yamaha NMAX 155', labelNote: 'Kab. Bogor • NMAX'),
+                    _buildPresetChip('B 3456 KZZ', month: '10', year: '26', model: 'Honda BeAT', labelNote: 'Bekasi • BeAT'),
+                    _buildPresetChip('B 8888 ZAB', month: '03', year: '24', model: 'Daihatsu Ayla', labelNote: 'Depok • Mati Pajak'),
+                    _buildPresetChip('D 1500 ABC', month: '09', year: '28', model: 'Honda Brio', labelNote: 'Bandung • Brio'),
                   ],
                 ),
               ),
@@ -601,10 +604,36 @@ Diperiksa via MaoneArt Scanner & e-Samsat
               _buildTypeChip('Mobil Penumpang', Icons.directions_car_filled_rounded),
             ],
           ),
+          const SizedBox(height: 10),
+
+          // Model Selector Horizontal Bar
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                Text(
+                  'Model: ',
+                  style: GoogleFonts.outfit(color: const Color(0xFF94A3B8), fontSize: 11, fontWeight: FontWeight.bold),
+                ),
+                _buildModelChip('Daihatsu Ayla'),
+                _buildModelChip('Toyota Agya'),
+                _buildModelChip('Honda Brio'),
+                _buildModelChip('Toyota Calya'),
+                _buildModelChip('Daihatsu Sigra'),
+                _buildModelChip('Toyota Avanza'),
+                _buildModelChip('Mitsubishi Xpander'),
+                _buildModelChip('Honda BeAT'),
+                _buildModelChip('Honda Vario 160'),
+                _buildModelChip('Yamaha NMAX 155'),
+                _buildModelChip('Honda PCX 160'),
+                _buildModelChip('Mitsubishi Pajero Sport'),
+              ],
+            ),
+          ),
           const SizedBox(height: 8),
 
           Text(
-            '💡 Ketuk huruf plat atau kotak STNK (Bulan/Tahun) di atas untuk mengedit',
+            '💡 Ketuk huruf plat, kotak STNK (Bulan/Tahun), atau Model di atas untuk mengedit',
             textAlign: TextAlign.center,
             style: GoogleFonts.outfit(color: const Color(0xFF94A3B8), fontSize: 11),
           ),
@@ -857,7 +886,42 @@ Diperiksa via MaoneArt Scanner & e-Samsat
     );
   }
 
-  Widget _buildPresetChip(String fullPlate, {String? month, String? year, String? labelNote}) {
+  Widget _buildModelChip(String modelName) {
+    final isSelected = _selectedModel == modelName;
+    return Padding(
+      padding: const EdgeInsets.only(right: 6),
+      child: GestureDetector(
+        onTap: () {
+          setState(() {
+            _selectedModel = isSelected ? null : modelName;
+          });
+          _checkTax();
+        },
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+          decoration: BoxDecoration(
+            color: isSelected ? AppTheme.accentEmerald.withValues(alpha: 0.25) : Colors.white.withValues(alpha: 0.05),
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(
+              color: isSelected ? AppTheme.accentEmerald : Colors.white24,
+              width: isSelected ? 1.5 : 0.8,
+            ),
+          ),
+          child: Text(
+            modelName,
+            style: GoogleFonts.outfit(
+              color: isSelected ? AppTheme.accentEmerald : Colors.white70,
+              fontSize: 11,
+              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPresetChip(String fullPlate, {String? month, String? year, String? model, String? labelNote}) {
     return Padding(
       padding: const EdgeInsets.only(right: 6),
       child: ActionChip(
@@ -878,6 +942,7 @@ Diperiksa via MaoneArt Scanner & e-Samsat
             _suffixController.text = parsed.suffix;
             if (month != null) _monthController.text = month;
             if (year != null) _yearController.text = year;
+            if (model != null) _selectedModel = model;
             _checkTax();
           }
         },
