@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'screens/home_screen.dart';
 import 'utils/app_theme.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Inisialisasi locale date formatting Indonesia
+  try {
+    await initializeDateFormatting('id_ID', null);
+  } catch (_) {}
 
   // Set status bar & navigation bar to transparent dark
   SystemChrome.setSystemUIOverlayStyle(

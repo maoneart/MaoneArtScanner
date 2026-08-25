@@ -43,7 +43,9 @@ class _VehicleTaxScreenState extends ConsumerState<VehicleTaxScreen> {
         _suffixController.text = parsed.suffix;
       }
     }
-    _checkTax();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkTax();
+    });
   }
 
   @override
@@ -236,6 +238,12 @@ Diperiksa via MaoneArt Scanner & e-Samsat
     return Scaffold(
       backgroundColor: AppTheme.bgDark,
       appBar: AppBar(
+        backgroundColor: AppTheme.bgDark,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
         title: Text(
           'Cek Pajak Plat Nomor',
           style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 18),
@@ -296,7 +304,26 @@ Diperiksa via MaoneArt Scanner & e-Samsat
 
               // 2. Realistic Indonesian TNKB Plate View & Inputs
               _buildPlateVisualizer(),
-              const SizedBox(height: 20),
+              const SizedBox(height: 12),
+
+              // Quick Preset Chips
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    Text(
+                      'Pilih Cepat: ',
+                      style: GoogleFonts.outfit(color: const Color(0xFF94A3B8), fontSize: 12, fontWeight: FontWeight.bold),
+                    ),
+                    _buildPresetChip('B 1234 ABC'),
+                    _buildPresetChip('D 1999 ZK'),
+                    _buildPresetChip('B 3456 TZZ'),
+                    _buildPresetChip('L 8888 AA'),
+                    _buildPresetChip('AB 2026 JK'),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
 
               // 3. Tax Details & Bill Card
               if (_isLoading)
@@ -672,6 +699,32 @@ Diperiksa via MaoneArt Scanner & e-Samsat
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildPresetChip(String fullPlate) {
+    return Padding(
+      padding: const EdgeInsets.only(right: 6),
+      child: ActionChip(
+        label: Text(fullPlate),
+        labelStyle: GoogleFonts.robotoMono(
+          color: Colors.white,
+          fontSize: 11,
+          fontWeight: FontWeight.bold,
+        ),
+        backgroundColor: const Color(0xFF1E293B),
+        side: const BorderSide(color: Color(0xFF334155)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        onPressed: () {
+          final parsed = VehicleTaxService.parsePlateFromText(fullPlate);
+          if (parsed != null) {
+            _prefixController.text = parsed.prefix;
+            _numberController.text = parsed.number;
+            _suffixController.text = parsed.suffix;
+            _checkTax();
+          }
+        },
       ),
     );
   }

@@ -53,10 +53,14 @@ jobs:
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/heads/main') || startsWith(github.ref, 'refs/heads/master')
         with:
-          tag_name: v1.0.0
-          name: 'MaoneArt Scanner v1.0.0 (Release)'
+          tag_name: v1.0.4
+          name: 'MaoneArt Scanner v1.0.4 (Release)'
           body: |
-            ## 📄 MaoneArt Scanner & AI OCR - Android Release APK
+            ## 📄 MaoneArt Scanner & AI OCR - Android Release APK (v1.0.4)
+            
+            - **Fix Blank Screen**: Memperbaiki issue layar abu-abu/blank saat membuka menu Cek Pajak Kendaraan akibat inisialisasi locale date format.
+            - **Preset Cepat**: Menambahkan preset plat nomor untuk pengujian instan.
+            - **Safe Formatters**: Penanganan formatting tanggal dan rupiah yang aman tanpa potensi unhandled exception.
             
             Aplikasi Scanner Dokumen Pintar berbasis Flutter dengan deteksi kertas otomatis, auto-crop, perspektif transformasi, ekstraksi teks OCR offline, dan ekspor multi-page PDF!
           files: build/app/outputs/flutter-apk/app-release.apk

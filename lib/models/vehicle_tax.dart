@@ -57,12 +57,43 @@ class VehicleTaxInfo {
     required this.officialSamsatName,
   });
 
-  String get formattedPkbPokok => NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0).format(pkbPokok);
-  String get formattedSwdkllj => NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0).format(swdkllj);
-  String get formattedPkbDenda => NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0).format(pkbDenda);
-  String get formattedSwdklljDenda => NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0).format(swdklljDenda);
-  String get formattedTotalTax => NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0).format(totalTax);
+  static String _safeCurrency(int amount) {
+    try {
+      return NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0).format(amount);
+    } catch (_) {
+      final str = amount.toString();
+      final buffer = StringBuffer();
+      int count = 0;
+      for (int i = str.length - 1; i >= 0; i--) {
+        buffer.write(str[i]);
+        count++;
+        if (count % 3 == 0 && i != 0) {
+          buffer.write('.');
+        }
+      }
+      return 'Rp ${buffer.toString().split('').reversed.join('')}';
+    }
+  }
 
-  String get formattedTaxDueDate => DateFormat('dd MMMM yyyy', 'id_ID').format(taxDueDate);
-  String get formattedStnkDueDate => DateFormat('dd MMMM yyyy', 'id_ID').format(stnkDueDate);
+  static String _safeDate(DateTime date) {
+    try {
+      return DateFormat('dd MMMM yyyy', 'id_ID').format(date);
+    } catch (_) {
+      const months = [
+        'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+      ];
+      final monthName = (date.month >= 1 && date.month <= 12) ? months[date.month - 1] : '${date.month}';
+      return '${date.day.toString().padLeft(2, '0')} $monthName ${date.year}';
+    }
+  }
+
+  String get formattedPkbPokok => _safeCurrency(pkbPokok);
+  String get formattedSwdkllj => _safeCurrency(swdkllj);
+  String get formattedPkbDenda => _safeCurrency(pkbDenda);
+  String get formattedSwdklljDenda => _safeCurrency(swdklljDenda);
+  String get formattedTotalTax => _safeCurrency(totalTax);
+
+  String get formattedTaxDueDate => _safeDate(taxDueDate);
+  String get formattedStnkDueDate => _safeDate(stnkDueDate);
 }
