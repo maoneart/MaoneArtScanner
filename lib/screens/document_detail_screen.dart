@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+
 import '../models/scanned_document.dart';
 import '../providers/document_provider.dart';
 import '../services/pdf_service.dart';
@@ -53,7 +53,7 @@ class _DocumentDetailScreenState extends ConsumerState<DocumentDetailScreen> {
       title: 'Ganti Nama Dokumen',
       initialValue: doc.title,
       hintText: 'Nama dokumen...',
-      icon: LucideIcons.edit3,
+      icon: Icons.edit_rounded,
     );
 
     if (newTitle != null && newTitle.isNotEmpty && newTitle != doc.title) {
@@ -119,7 +119,7 @@ class _DocumentDetailScreenState extends ConsumerState<DocumentDetailScreen> {
       initialValue: doc.notes,
       hintText: 'Tulis keterangan atau catatan penting di sini...',
       maxLines: 4,
-      icon: LucideIcons.fileText,
+      icon: Icons.description_rounded,
     );
 
     if (notes != null) {
@@ -158,7 +158,7 @@ class _DocumentDetailScreenState extends ConsumerState<DocumentDetailScreen> {
                               await ref.read(documentProvider.notifier).addPages(doc.id, newPaths);
                             }
                           },
-                          icon: const Icon(LucideIcons.image, color: AppTheme.accentEmerald),
+                          icon: const Icon(Icons.photo_library_rounded, color: AppTheme.accentEmerald),
                           label: Text('Dari Galeri', style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold)),
                           style: OutlinedButton.styleFrom(
                             side: BorderSide(color: Colors.white.withValues(alpha: 0.15)),
@@ -179,7 +179,7 @@ class _DocumentDetailScreenState extends ConsumerState<DocumentDetailScreen> {
                               await ref.read(documentProvider.notifier).addPages(doc.id, newPaths);
                             }
                           },
-                          icon: const Icon(LucideIcons.camera, color: Colors.black),
+                          icon: const Icon(Icons.camera_alt_rounded, color: Colors.black),
                           label: Text('Scan Kamera', style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.bold)),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppTheme.accentCyan,
@@ -206,7 +206,7 @@ class _DocumentDetailScreenState extends ConsumerState<DocumentDetailScreen> {
       confirmText: 'Hapus Halaman',
       cancelText: 'Batal',
       isDanger: true,
-      icon: LucideIcons.trash2,
+      icon: Icons.delete_outline_rounded,
     );
 
     if (confirm) {
@@ -226,7 +226,7 @@ class _DocumentDetailScreenState extends ConsumerState<DocumentDetailScreen> {
       confirmText: 'Hapus Dokumen',
       cancelText: 'Batal',
       isDanger: true,
-      icon: LucideIcons.alertTriangle,
+      icon: Icons.warning_amber_rounded,
     );
 
     if (confirm) {
@@ -265,7 +265,7 @@ class _DocumentDetailScreenState extends ConsumerState<DocumentDetailScreen> {
                             Navigator.of(context).pop();
                             PdfService.shareImages(doc.pagePaths, text: doc.title);
                           },
-                          icon: const Icon(LucideIcons.image, color: AppTheme.accentEmerald),
+                          icon: const Icon(Icons.photo_library_rounded, color: AppTheme.accentEmerald),
                           label: Text('File Gambar (JPG)', style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
                           style: OutlinedButton.styleFrom(
                             side: BorderSide(color: Colors.white.withValues(alpha: 0.15)),
@@ -285,7 +285,7 @@ class _DocumentDetailScreenState extends ConsumerState<DocumentDetailScreen> {
                               MaterialPageRoute(builder: (_) => PdfPreviewScreen(document: doc)),
                             );
                           },
-                          icon: const Icon(LucideIcons.fileText, color: Colors.black),
+                          icon: const Icon(Icons.picture_as_pdf_rounded, color: Colors.black),
                           label: Text('File PDF', style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 13)),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppTheme.accentCyan,
@@ -336,18 +336,18 @@ class _DocumentDetailScreenState extends ConsumerState<DocumentDetailScreen> {
                 ),
               ),
               const SizedBox(width: 6),
-              const Icon(LucideIcons.edit2, color: AppTheme.accentCyan, size: 14),
+              const Icon(Icons.edit_rounded, color: AppTheme.accentCyan, size: 14),
             ],
           ),
         ),
         actions: [
           IconButton(
-            icon: const Icon(LucideIcons.share2, color: AppTheme.accentEmerald, size: 20),
+            icon: const Icon(Icons.share_rounded, color: AppTheme.accentEmerald, size: 20),
             tooltip: 'Bagikan',
             onPressed: () => _handleShare(doc),
           ),
           IconButton(
-            icon: const Icon(LucideIcons.trash2, color: AppTheme.accentRose, size: 20),
+            icon: const Icon(Icons.delete_outline_rounded, color: AppTheme.accentRose, size: 20),
             tooltip: 'Hapus Dokumen',
             onPressed: () => _handleDeleteDocument(doc),
           ),
@@ -382,7 +382,7 @@ class _DocumentDetailScreenState extends ConsumerState<DocumentDetailScreen> {
                             ),
                           ),
                           const SizedBox(width: 4),
-                          const Icon(LucideIcons.chevronDown, size: 12, color: AppTheme.accentEmerald),
+                          const Icon(Icons.keyboard_arrow_down_rounded, size: 14, color: AppTheme.accentEmerald),
                         ],
                       ),
                     ),
@@ -434,7 +434,7 @@ class _DocumentDetailScreenState extends ConsumerState<DocumentDetailScreen> {
 
                         if (!file.existsSync()) {
                           return const Center(
-                            child: Icon(LucideIcons.imageOff, size: 48, color: Color(0xFF64748B)),
+                            child: Icon(Icons.broken_image_rounded, size: 48, color: Color(0xFF64748B)),
                           );
                         }
 
@@ -511,7 +511,7 @@ class _DocumentDetailScreenState extends ConsumerState<DocumentDetailScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   _buildActionButton(
-                    icon: LucideIcons.fileText,
+                    icon: Icons.picture_as_pdf_rounded,
                     label: 'Export PDF',
                     color: AppTheme.accentCyan,
                     onTap: () {
@@ -521,7 +521,7 @@ class _DocumentDetailScreenState extends ConsumerState<DocumentDetailScreen> {
                     },
                   ),
                   _buildActionButton(
-                    icon: LucideIcons.sparkles,
+                    icon: Icons.auto_awesome_rounded,
                     label: 'OCR Teks',
                     color: AppTheme.accentPurple,
                     onTap: () {
@@ -531,19 +531,19 @@ class _DocumentDetailScreenState extends ConsumerState<DocumentDetailScreen> {
                     },
                   ),
                   _buildActionButton(
-                    icon: LucideIcons.plusCircle,
+                    icon: Icons.add_circle_outline_rounded,
                     label: 'Tambah Hal',
                     color: AppTheme.accentEmerald,
                     onTap: () => _handleAddPages(doc),
                   ),
                   _buildActionButton(
-                    icon: LucideIcons.fileEdit,
+                    icon: Icons.edit_note_rounded,
                     label: 'Catatan',
                     color: AppTheme.accentAmber,
                     onTap: () => _handleEditNotes(doc),
                   ),
                   _buildActionButton(
-                    icon: LucideIcons.trash2,
+                    icon: Icons.delete_outline_rounded,
                     label: 'Hapus Hal',
                     color: AppTheme.accentRose,
                     onTap: () => _handleDeletePage(doc),

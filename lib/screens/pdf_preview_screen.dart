@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+
 import 'package:pdf/pdf.dart';
 import 'package:printing/printing.dart';
 import '../models/scanned_document.dart';
@@ -74,12 +74,12 @@ class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(LucideIcons.printer, color: AppTheme.accentCyan, size: 20),
+            icon: const Icon(Icons.print_rounded, color: AppTheme.accentCyan, size: 20),
             tooltip: 'Cetak / Print',
             onPressed: _generatedPdfPath != null ? _printPdf : null,
           ),
           IconButton(
-            icon: const Icon(LucideIcons.share2, color: AppTheme.accentEmerald, size: 20),
+            icon: const Icon(Icons.share_rounded, color: AppTheme.accentEmerald, size: 20),
             tooltip: 'Bagikan PDF',
             onPressed: _generatedPdfPath != null ? _sharePdf : null,
           ),
@@ -96,7 +96,7 @@ class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
                 borderRadius: 14,
                 child: Row(
                   children: [
-                    const Icon(LucideIcons.fileSpreadsheet, color: AppTheme.accentCyan, size: 18),
+                    const Icon(Icons.description_rounded, color: AppTheme.accentCyan, size: 18),
                     const SizedBox(width: 10),
                     Text(
                       'Ukuran Kertas:',
@@ -108,7 +108,7 @@ class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
                         child: DropdownButton<PaperSizeOption>(
                           value: _selectedPaper,
                           dropdownColor: AppTheme.bgCard,
-                          icon: const Icon(LucideIcons.chevronDown, color: AppTheme.accentCyan, size: 18),
+                          icon: const Icon(Icons.keyboard_arrow_down_rounded, color: AppTheme.accentCyan, size: 18),
                           items: PaperSizeOption.values.map((opt) {
                             return DropdownMenuItem(
                               value: opt,
@@ -188,7 +188,7 @@ class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                           backgroundColor: Colors.white.withValues(alpha: 0.05),
                         ),
-                        icon: const Icon(LucideIcons.externalLink, color: Colors.white70, size: 18),
+                        icon: const Icon(Icons.open_in_new_rounded, color: Colors.white70, size: 18),
                         label: Text(
                           'Buka di PDF Reader',
                           style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 13),
@@ -208,7 +208,7 @@ class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
                           elevation: 0,
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                         ),
-                        icon: const Icon(LucideIcons.send, color: Colors.black, size: 18),
+                        icon: const Icon(Icons.send_rounded, color: Colors.black, size: 18),
                         label: Text(
                           'Kirim PDF',
                           style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 14),

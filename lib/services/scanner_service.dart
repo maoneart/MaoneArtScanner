@@ -48,8 +48,7 @@ class ScannerService {
   static Future<ScannerResult> startDocumentScan({int pageLimit = 50}) async {
     try {
       final options = DocumentScannerOptions(
-        documentFormat: DocumentFormat.jpeg,
-        mode: ScannerMode.full, // CamScanner-like interactive editing & multi-page
+        mode: ScannerMode.full,
         isGalleryImport: true,
         pageLimit: pageLimit,
       );

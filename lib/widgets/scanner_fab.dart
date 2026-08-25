@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:lucide_icons/lucide_icons.dart';
 import '../utils/app_theme.dart';
 
 class ScannerFab extends StatelessWidget {
@@ -46,7 +45,7 @@ class ScannerFab extends StatelessWidget {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(LucideIcons.image, color: AppTheme.accentEmerald, size: 18),
+                    const Icon(Icons.photo_library_rounded, color: AppTheme.accentEmerald, size: 20),
                     const SizedBox(width: 6),
                     Text(
                       'Impor',
@@ -95,9 +94,9 @@ class ScannerFab extends StatelessWidget {
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(
-                        LucideIcons.camera,
+                        Icons.document_scanner_rounded,
                         color: AppTheme.accentCyan,
-                        size: 18,
+                        size: 20,
                       ),
                     ),
                     const SizedBox(width: 10),

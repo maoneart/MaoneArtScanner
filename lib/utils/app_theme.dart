@@ -98,14 +98,6 @@ class AppTheme {
           fontSize: 13,
         ),
       ),
-      cardTheme: CardTheme(
-        color: bgCard.withValues(alpha: 0.7),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-          side: BorderSide(color: Colors.white.withValues(alpha: 0.1), width: 1),
-        ),
-        elevation: 0,
-      ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: accentCyan,

@@ -1,7 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:lucide_icons/lucide_icons.dart';
 import '../utils/app_theme.dart';
 
 class MaoneArtModal {
@@ -13,7 +12,7 @@ class MaoneArtModal {
     String confirmText = 'Ya, Lanjutkan',
     String cancelText = 'Batal',
     bool isDanger = false,
-    IconData icon = LucideIcons.alertTriangle,
+    IconData icon = Icons.warning_amber_rounded,
   }) async {
     final result = await showGeneralDialog<bool>(
       context: context,
@@ -75,7 +74,7 @@ class MaoneArtModal {
                           child: Icon(
                             icon,
                             color: isDanger ? AppTheme.accentRose : AppTheme.accentCyan,
-                            size: 28,
+                            size: 30,
                           ),
                         ),
                         const SizedBox(height: 18),
@@ -183,7 +182,7 @@ class MaoneArtModal {
     required String title,
     required String message,
     String buttonText = 'Mengerti',
-    IconData icon = LucideIcons.info,
+    IconData icon = Icons.info_outline_rounded,
     Color iconColor = AppTheme.accentCyan,
   }) async {
     await showGeneralDialog(
@@ -238,7 +237,7 @@ class MaoneArtModal {
                               width: 1.5,
                             ),
                           ),
-                          child: Icon(icon, color: iconColor, size: 26),
+                          child: Icon(icon, color: iconColor, size: 28),
                         ),
                         const SizedBox(height: 18),
                         Text(
@@ -305,7 +304,7 @@ class MaoneArtModal {
     String confirmText = 'Simpan',
     String cancelText = 'Batal',
     int maxLines = 1,
-    IconData icon = LucideIcons.edit3,
+    IconData icon = Icons.edit_note_rounded,
   }) async {
     final controller = TextEditingController(text: initialValue);
 
@@ -358,7 +357,7 @@ class MaoneArtModal {
                                 color: AppTheme.accentCyan.withValues(alpha: 0.15),
                                 borderRadius: BorderRadius.circular(12),
                               ),
-                              child: Icon(icon, color: AppTheme.accentCyan, size: 20),
+                              child: Icon(icon, color: AppTheme.accentCyan, size: 22),
                             ),
                             const SizedBox(width: 14),
                             Expanded(

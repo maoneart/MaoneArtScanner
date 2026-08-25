@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+
 import '../models/scanned_document.dart';
 import '../providers/document_provider.dart';
 import '../services/pdf_service.dart';
@@ -89,7 +89,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           title: 'Ganti Nama Dokumen',
           initialValue: doc.title,
           hintText: 'Nama baru dokumen...',
-          icon: LucideIcons.edit3,
+          icon: Icons.edit_rounded,
         );
         if (newTitle != null && newTitle.isNotEmpty && newTitle != doc.title) {
           await ref.read(documentProvider.notifier).renameDocument(doc.id, newTitle);
@@ -152,7 +152,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           confirmText: 'Hapus',
           cancelText: 'Batal',
           isDanger: true,
-          icon: LucideIcons.trash2,
+          icon: Icons.delete_outline_rounded,
         );
         if (confirm) {
           await ref.read(documentProvider.notifier).deleteDocument(doc.id);
@@ -166,7 +166,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       context,
       title: 'MaoneArt Scanner v1.0',
       message: 'Aplikasi Smart AI Document Scanner dengan Google ML Kit Paper Detection, Perspective Auto-Crop, Offline OCR Text Extractor, dan Multi-Page PDF Exporter.',
-      icon: LucideIcons.scanLine,
+      icon: Icons.document_scanner_rounded,
       iconColor: AppTheme.accentCyan,
       buttonText: 'Tutup',
     );
@@ -193,7 +193,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       gradient: AppTheme.primaryGradient,
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Icon(LucideIcons.scanLine, color: Colors.black, size: 22),
+                    child: const Icon(Icons.document_scanner_rounded, color: Colors.black, size: 22),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -221,7 +221,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ),
                   IconButton(
                     icon: Icon(
-                      _isSearchExpanded ? LucideIcons.x : LucideIcons.search,
+                      _isSearchExpanded ? Icons.close_rounded : Icons.search_rounded,
                       color: Colors.white70,
                       size: 20,
                     ),
@@ -237,7 +237,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ),
                   IconButton(
                     icon: Icon(
-                      state.isGridView ? LucideIcons.layoutList : LucideIcons.layoutGrid,
+                      state.isGridView ? Icons.view_list_rounded : Icons.grid_view_rounded,
                       color: AppTheme.accentCyan,
                       size: 20,
                     ),
@@ -245,7 +245,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     onPressed: () => ref.read(documentProvider.notifier).toggleViewMode(),
                   ),
                   IconButton(
-                    icon: const Icon(LucideIcons.info, color: Colors.white70, size: 20),
+                    icon: const Icon(Icons.info_outline_rounded, color: Colors.white70, size: 20),
                     onPressed: _showInfoModal,
                   ),
                 ],
@@ -267,7 +267,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       hintText: 'Cari judul, OCR teks, atau catatan...',
                       hintStyle: GoogleFonts.inter(color: const Color(0xFF64748B), fontSize: 13),
                       border: InputBorder.none,
-                      icon: const Icon(LucideIcons.search, color: AppTheme.accentCyan, size: 18),
+                      icon: const Icon(Icons.search_rounded, color: AppTheme.accentCyan, size: 18),
                     ),
                     onChanged: (val) {
                       ref.read(documentProvider.notifier).setSearchQuery(val);
@@ -367,7 +367,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       color: AppTheme.accentCyan.withValues(alpha: 0.1),
                       border: Border.all(color: AppTheme.accentCyan.withValues(alpha: 0.25), width: 1.5),
                     ),
-                    child: const Icon(LucideIcons.fileSearch, color: AppTheme.accentCyan, size: 44),
+                    child: const Icon(Icons.find_in_page_rounded, color: AppTheme.accentCyan, size: 44),
                   ),
                   const SizedBox(height: 24),
                   Text(
@@ -391,7 +391,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   const SizedBox(height: 24),
                   ElevatedButton.icon(
                     onPressed: _startCameraScan,
-                    icon: const Icon(LucideIcons.camera, color: Colors.black, size: 18),
+                    icon: const Icon(Icons.camera_alt_rounded, color: Colors.black, size: 18),
                     label: Text(
                       'Scan Sekarang',
                       style: GoogleFonts.outfit(fontWeight: FontWeight.bold),

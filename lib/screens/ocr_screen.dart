@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+
 import 'package:share_plus/share_plus.dart';
 import '../models/scanned_document.dart';
 import '../providers/document_provider.dart';
@@ -91,7 +91,7 @@ class _OcrScreenState extends ConsumerState<OcrScreen> {
       SnackBar(
         content: Row(
           children: [
-            const Icon(LucideIcons.checkCheck, color: Colors.black, size: 18),
+            const Icon(Icons.done_all_rounded, color: Colors.black, size: 18),
             const SizedBox(width: 8),
             Text('Seluruh teks berhasil disalin!', style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.bold)),
           ],
@@ -120,7 +120,7 @@ class _OcrScreenState extends ConsumerState<OcrScreen> {
         actions: [
           // Search Toggle
           IconButton(
-            icon: Icon(_isSearchOpen ? LucideIcons.x : LucideIcons.search, size: 20),
+            icon: Icon(_isSearchOpen ? Icons.close_rounded : Icons.search_rounded, size: 20),
             onPressed: () {
               setState(() {
                 _isSearchOpen = !_isSearchOpen;
@@ -133,13 +133,13 @@ class _OcrScreenState extends ConsumerState<OcrScreen> {
           ),
           // Re-run OCR
           IconButton(
-            icon: const Icon(LucideIcons.refreshCw, size: 20, color: AppTheme.accentCyan),
+            icon: const Icon(Icons.refresh_rounded, size: 20, color: AppTheme.accentCyan),
             tooltip: 'Scan Ulang OCR',
             onPressed: _isProcessing ? null : _runOcrRecognition,
           ),
           // Edit or Save Toggle
           IconButton(
-            icon: Icon(_isEditing ? LucideIcons.check : LucideIcons.edit2, size: 20, color: AppTheme.accentEmerald),
+            icon: Icon(_isEditing ? Icons.check_rounded : Icons.edit_rounded, size: 20, color: AppTheme.accentEmerald),
             tooltip: _isEditing ? 'Simpan' : 'Edit Teks',
             onPressed: () {
               if (_isEditing) {
@@ -169,7 +169,7 @@ class _OcrScreenState extends ConsumerState<OcrScreen> {
                       hintText: 'Cari kata dalam teks OCR...',
                       hintStyle: GoogleFonts.inter(color: const Color(0xFF64748B), fontSize: 13),
                       border: InputBorder.none,
-                      icon: const Icon(LucideIcons.search, color: AppTheme.accentCyan, size: 18),
+                      icon: const Icon(Icons.search_rounded, color: AppTheme.accentCyan, size: 18),
                     ),
                     onChanged: (val) => setState(() => _searchQuery = val.trim()),
                   ),
@@ -251,7 +251,7 @@ class _OcrScreenState extends ConsumerState<OcrScreen> {
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                           backgroundColor: AppTheme.accentCyan.withValues(alpha: 0.1),
                         ),
-                        icon: const Icon(LucideIcons.copy, color: AppTheme.accentCyan, size: 18),
+                        icon: const Icon(Icons.copy_rounded, color: AppTheme.accentCyan, size: 18),
                         label: Text(
                           'Salin Teks',
                           style: GoogleFonts.outfit(
@@ -275,7 +275,7 @@ class _OcrScreenState extends ConsumerState<OcrScreen> {
                           elevation: 0,
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                         ),
-                        icon: const Icon(LucideIcons.share2, color: Colors.white, size: 18),
+                        icon: const Icon(Icons.share_rounded, color: Colors.white, size: 18),
                         label: Text(
                           'Bagikan',
                           style: GoogleFonts.outfit(

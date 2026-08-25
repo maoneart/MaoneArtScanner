@@ -2,11 +2,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import 'package:lucide_icons/lucide_icons.dart';
 import '../models/scanned_document.dart';
 import '../utils/app_theme.dart';
 import 'glass_container.dart';
-import 'maoneart_modal.dart';
 
 enum DocumentAction { pdf, ocr, category, rename, share, delete }
 
@@ -82,7 +80,7 @@ class DocumentCard extends StatelessWidget {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(LucideIcons.layers, size: 12, color: AppTheme.accentCyan),
+                        const Icon(Icons.layers_rounded, size: 13, color: AppTheme.accentCyan),
                         const SizedBox(width: 4),
                         Text(
                           '${document.pageCount} Hal',
@@ -133,7 +131,7 @@ class DocumentCard extends StatelessWidget {
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(LucideIcons.sparkles, size: 10, color: Colors.white),
+                          const Icon(Icons.auto_awesome_rounded, size: 10, color: Colors.white),
                           const SizedBox(width: 4),
                           Text(
                             'OCR',
@@ -325,7 +323,7 @@ class DocumentCard extends StatelessWidget {
       color: AppTheme.bgSurface,
       child: const Center(
         child: Icon(
-          LucideIcons.fileText,
+          Icons.description_rounded,
           color: Color(0xFF475569),
           size: 32,
         ),
@@ -346,44 +344,44 @@ class DocumentCard extends StatelessWidget {
         ),
       ),
       child: PopupMenuButton<DocumentAction>(
-        icon: const Icon(LucideIcons.moreVertical, color: Color(0xFF94A3B8), size: 18),
+        icon: const Icon(Icons.more_vert_rounded, color: Color(0xFF94A3B8), size: 20),
         padding: EdgeInsets.zero,
         onSelected: onActionSelected,
         itemBuilder: (context) => [
           _buildPopupMenuItem(
             DocumentAction.pdf,
-            LucideIcons.fileText,
+            Icons.picture_as_pdf_rounded,
             'Export PDF',
             AppTheme.accentCyan,
           ),
           _buildPopupMenuItem(
             DocumentAction.ocr,
-            LucideIcons.sparkles,
+            Icons.auto_awesome_rounded,
             'Ekstrak Teks (OCR)',
             AppTheme.accentPurple,
           ),
           _buildPopupMenuItem(
             DocumentAction.share,
-            LucideIcons.share2,
+            Icons.share_rounded,
             'Bagikan Dokumen',
             AppTheme.accentEmerald,
           ),
           _buildPopupMenuItem(
             DocumentAction.rename,
-            LucideIcons.edit2,
+            Icons.edit_rounded,
             'Ganti Nama',
             Colors.white70,
           ),
           _buildPopupMenuItem(
             DocumentAction.category,
-            LucideIcons.tag,
+            Icons.label_rounded,
             'Ubah Kategori',
             Colors.white70,
           ),
           const PopupMenuDivider(height: 1),
           _buildPopupMenuItem(
             DocumentAction.delete,
-            LucideIcons.trash2,
+            Icons.delete_outline_rounded,
             'Hapus Dokumen',
             AppTheme.accentRose,
           ),
@@ -403,7 +401,7 @@ class DocumentCard extends StatelessWidget {
       height: 40,
       child: Row(
         children: [
-          Icon(icon, size: 16, color: color),
+          Icon(icon, size: 18, color: color),
           const SizedBox(width: 12),
           Text(
             label,
