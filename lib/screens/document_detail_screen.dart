@@ -65,42 +65,45 @@ class _DocumentDetailScreenState extends ConsumerState<DocumentDetailScreen> {
     final selected = await showModalBottomSheet<String>(
       context: context,
       backgroundColor: Colors.transparent,
+      isScrollControlled: true,
       builder: (context) {
-        return ClipRRect(
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-          child: Container(
-            color: AppTheme.bgCard,
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Pilih Kategori Dokumen',
-                  style: GoogleFonts.outfit(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 16),
-                Wrap(
-                  spacing: 10,
-                  runSpacing: 10,
-                  children: kDocumentCategories.where((c) => c != 'Semua').map((category) {
-                    final isSelected = category == doc.category;
-                    return ChoiceChip(
-                      label: Text(category),
-                      selected: isSelected,
-                      selectedColor: AppTheme.accentEmerald,
-                      backgroundColor: AppTheme.bgSurface,
-                      labelStyle: GoogleFonts.outfit(
-                        color: isSelected ? Colors.black : Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      onSelected: (selected) {
-                        Navigator.of(context).pop(category);
-                      },
-                    );
-                  }).toList(),
-                ),
-              ],
+        return SafeArea(
+          child: ClipRRect(
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+            child: Container(
+              color: AppTheme.bgCard,
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Pilih Kategori Dokumen',
+                    style: GoogleFonts.outfit(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 16),
+                  Wrap(
+                    spacing: 10,
+                    runSpacing: 10,
+                    children: kDocumentCategories.where((c) => c != 'Semua').map((category) {
+                      final isSelected = category == doc.category;
+                      return ChoiceChip(
+                        label: Text(category),
+                        selected: isSelected,
+                        selectedColor: AppTheme.accentEmerald,
+                        backgroundColor: AppTheme.bgSurface,
+                        labelStyle: GoogleFonts.outfit(
+                          color: isSelected ? Colors.black : Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        onSelected: (selected) {
+                          Navigator.of(context).pop(category);
+                        },
+                      );
+                    }).toList(),
+                  ),
+                ],
+              ),
             ),
           ),
         );
@@ -131,66 +134,69 @@ class _DocumentDetailScreenState extends ConsumerState<DocumentDetailScreen> {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
+      isScrollControlled: true,
       builder: (context) {
-        return ClipRRect(
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-          child: Container(
-            color: AppTheme.bgCard,
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'Tambah Halaman Baru',
-                  style: GoogleFonts.outfit(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  children: [
-                    Expanded(
-                      child: SizedBox(
-                        height: 50,
-                        child: OutlinedButton.icon(
-                          onPressed: () async {
-                            Navigator.of(context).pop();
-                            final newPaths = await ScannerService.addNewPages(fromCamera: false);
-                            if (newPaths.isNotEmpty) {
-                              await ref.read(documentProvider.notifier).addPages(doc.id, newPaths);
-                            }
-                          },
-                          icon: const Icon(Icons.photo_library_rounded, color: AppTheme.accentEmerald),
-                          label: Text('Dari Galeri', style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold)),
-                          style: OutlinedButton.styleFrom(
-                            side: BorderSide(color: Colors.white.withValues(alpha: 0.15)),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        return SafeArea(
+          child: ClipRRect(
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+            child: Container(
+              color: AppTheme.bgCard,
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Tambah Halaman Baru',
+                    style: GoogleFonts.outfit(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: SizedBox(
+                          height: 50,
+                          child: OutlinedButton.icon(
+                            onPressed: () async {
+                              Navigator.of(context).pop();
+                              final newPaths = await ScannerService.addNewPages(fromCamera: false);
+                              if (newPaths.isNotEmpty) {
+                                await ref.read(documentProvider.notifier).addPages(doc.id, newPaths);
+                              }
+                            },
+                            icon: const Icon(Icons.photo_library_rounded, color: AppTheme.accentEmerald),
+                            label: Text('Dari Galeri', style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold)),
+                            style: OutlinedButton.styleFrom(
+                              side: BorderSide(color: Colors.white.withValues(alpha: 0.15)),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: SizedBox(
-                        height: 50,
-                        child: ElevatedButton.icon(
-                          onPressed: () async {
-                            Navigator.of(context).pop();
-                            final newPaths = await ScannerService.addNewPages(fromCamera: true);
-                            if (newPaths.isNotEmpty) {
-                              await ref.read(documentProvider.notifier).addPages(doc.id, newPaths);
-                            }
-                          },
-                          icon: const Icon(Icons.camera_alt_rounded, color: Colors.black),
-                          label: Text('Scan Kamera', style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.bold)),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppTheme.accentCyan,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: SizedBox(
+                          height: 50,
+                          child: ElevatedButton.icon(
+                            onPressed: () async {
+                              Navigator.of(context).pop();
+                              final newPaths = await ScannerService.addNewPages(fromCamera: true);
+                              if (newPaths.isNotEmpty) {
+                                await ref.read(documentProvider.notifier).addPages(doc.id, newPaths);
+                              }
+                            },
+                            icon: const Icon(Icons.camera_alt_rounded, color: Colors.black),
+                            label: Text('Scan Kamera', style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.bold)),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppTheme.accentCyan,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         );
@@ -241,62 +247,65 @@ class _DocumentDetailScreenState extends ConsumerState<DocumentDetailScreen> {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
+      isScrollControlled: true,
       builder: (context) {
-        return ClipRRect(
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-          child: Container(
-            color: AppTheme.bgCard,
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'Bagikan Dokumen',
-                  style: GoogleFonts.outfit(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  children: [
-                    Expanded(
-                      child: SizedBox(
-                        height: 50,
-                        child: OutlinedButton.icon(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                            PdfService.shareImages(doc.pagePaths, text: doc.title);
-                          },
-                          icon: const Icon(Icons.photo_library_rounded, color: AppTheme.accentEmerald),
-                          label: Text('File Gambar (JPG)', style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
-                          style: OutlinedButton.styleFrom(
-                            side: BorderSide(color: Colors.white.withValues(alpha: 0.15)),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        return SafeArea(
+          child: ClipRRect(
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+            child: Container(
+              color: AppTheme.bgCard,
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Bagikan Dokumen',
+                    style: GoogleFonts.outfit(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: SizedBox(
+                          height: 50,
+                          child: OutlinedButton.icon(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                              PdfService.shareImages(doc.pagePaths, text: doc.title);
+                            },
+                            icon: const Icon(Icons.photo_library_rounded, color: AppTheme.accentEmerald),
+                            label: Text('File Gambar (JPG)', style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
+                            style: OutlinedButton.styleFrom(
+                              side: BorderSide(color: Colors.white.withValues(alpha: 0.15)),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: SizedBox(
-                        height: 50,
-                        child: ElevatedButton.icon(
-                          onPressed: () async {
-                            Navigator.of(context).pop();
-                            Navigator.of(context).push(
-                              MaterialPageRoute(builder: (_) => PdfPreviewScreen(document: doc)),
-                            );
-                          },
-                          icon: const Icon(Icons.picture_as_pdf_rounded, color: Colors.black),
-                          label: Text('File PDF', style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 13)),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppTheme.accentCyan,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: SizedBox(
+                          height: 50,
+                          child: ElevatedButton.icon(
+                            onPressed: () async {
+                              Navigator.of(context).pop();
+                              Navigator.of(context).push(
+                                MaterialPageRoute(builder: (_) => PdfPreviewScreen(document: doc)),
+                              );
+                            },
+                            icon: const Icon(Icons.picture_as_pdf_rounded, color: Colors.black),
+                            label: Text('File PDF', style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 13)),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppTheme.accentCyan,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         );

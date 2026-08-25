@@ -64,9 +64,19 @@ class ScannerService {
       final permanentPaths = await StorageService.persistScannedImages(result.images!);
       return ScannerResult.success(permanentPaths, pdf: result.pdf?.pageCount != null ? result.pdf?.pageCount.toString() : null);
     } catch (e) {
-      // Jika ML Kit gagal (misalnya di emulator/device tanpa Google Play Services),
-      // otomatis fallback ke Image Picker kamera
-      return await pickFromCamera();
+      // Tangani pembatalan user (back / close) agar tidak membuka kamera bawaan
+      final errorMsg = e.toString().toLowerCase();
+      if (errorMsg.contains('cancel') ||
+          errorMsg.contains('canceled') ||
+          errorMsg.contains('cancelled') ||
+          errorMsg.contains('result_canceled') ||
+          errorMsg.contains('activity_canceled') ||
+          errorMsg.contains('dismissed')) {
+        return ScannerResult.canceled();
+      }
+
+      // Jika user menekan tombol close/back saat scanning, jangan buka kamera bawaan
+      return ScannerResult.canceled();
     }
   }
 

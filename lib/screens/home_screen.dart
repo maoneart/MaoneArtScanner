@@ -100,40 +100,43 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         final selected = await showModalBottomSheet<String>(
           context: context,
           backgroundColor: Colors.transparent,
+          isScrollControlled: true,
           builder: (context) {
-            return ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-              child: Container(
-                color: AppTheme.bgCard,
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Pilih Kategori',
-                      style: GoogleFonts.outfit(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 16),
-                    Wrap(
-                      spacing: 10,
-                      runSpacing: 10,
-                      children: kDocumentCategories.where((c) => c != 'Semua').map((category) {
-                        final isSelected = category == doc.category;
-                        return ChoiceChip(
-                          label: Text(category),
-                          selected: isSelected,
-                          selectedColor: AppTheme.accentEmerald,
-                          backgroundColor: AppTheme.bgSurface,
-                          labelStyle: GoogleFonts.outfit(
-                            color: isSelected ? Colors.black : Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          onSelected: (_) => Navigator.of(context).pop(category),
-                        );
-                      }).toList(),
-                    ),
-                  ],
+            return SafeArea(
+              child: ClipRRect(
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+                child: Container(
+                  color: AppTheme.bgCard,
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Pilih Kategori',
+                        style: GoogleFonts.outfit(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 16),
+                      Wrap(
+                        spacing: 10,
+                        runSpacing: 10,
+                        children: kDocumentCategories.where((c) => c != 'Semua').map((category) {
+                          final isSelected = category == doc.category;
+                          return ChoiceChip(
+                            label: Text(category),
+                            selected: isSelected,
+                            selectedColor: AppTheme.accentEmerald,
+                            backgroundColor: AppTheme.bgSurface,
+                            labelStyle: GoogleFonts.outfit(
+                              color: isSelected ? Colors.black : Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            onSelected: (_) => Navigator.of(context).pop(category),
+                          );
+                        }).toList(),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             );
