@@ -53,14 +53,14 @@ jobs:
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/heads/main') || startsWith(github.ref, 'refs/heads/master')
         with:
-          tag_name: v1.1.4
-          name: 'MaoneArt Scanner v1.1.4 (Release)'
+          tag_name: v1.1.5
+          name: 'MaoneArt Scanner v1.1.5 (Release)'
           body: |
-            ## 📄 MaoneArt Scanner & AI OCR - Android Release APK (v1.1.4)
+            ## 📄 MaoneArt Scanner & AI OCR - Android Release APK (v1.1.5)
             
-            - **Integrasi CapSolver API (Auto-Solve reCAPTCHA)**: Mendukung penyelesaian captcha otomatis via GitHub Secrets (`CAPSOLVER_API_KEY`) yang disuntikkan secara terenkripsi saat build tanpa ekspos kunci di kode publik.
+            - **Perbaikan Sinkronisasi Bulan & Tahun STNK 5 Tahunan (TNKB)**: Memisahkan secara presisi antara tanggal jatuh tempo Pajak PKB tahunan (misal 28 April) dengan masa berlaku Plat Kaleng 5 Tahunan (misal `04.30` / April 2030) agar 100% cocok dengan plat fisik kendaraan.
             - **Pemetaan Presisi Plat B Wilayah Jawa Barat**: Mendeteksi akurat seluruh plat B Jawa Barat untuk Kota Bekasi (akhiran `K`), Kabupaten Bekasi / Cikarang (akhiran `F`), dan Kota Depok / Cinere (akhiran `Z` & `E`).
-            - **In-App Browser & e-Samsat Multi-Provinsi**: Buka portal resmi e-Samsat se-Indonesia langsung di dalam aplikasi dengan auto-copy nomor plat.
+            - **Live Samsat Gateway Terintegrasi**: Penarikan data real-time resmi tanpa captcha solver tambahan untuk Jawa Barat, Banten, dan DI Yogyakarta.
             
             Aplikasi Scanner Dokumen Pintar berbasis Flutter dengan deteksi kertas otomatis, auto-crop, perspektif transformasi, ekstraksi teks OCR offline, dan ekspor multi-page PDF!
           files: build/app/outputs/flutter-apk/app-release.apk

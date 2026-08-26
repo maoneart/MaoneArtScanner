@@ -737,11 +737,26 @@ class VehicleTaxService {
             if (parsedDate != null) taxDueDate = parsedDate;
           }
 
+          // STNK 5 Tahunan & Plat Fisik (TNKB 5 Tahunan)
+          int stnkYear = modelYear + 5;
+          if (stnkYear < DateTime.now().year) stnkYear = DateTime.now().year + 2;
+          DateTime stnkDueDate = DateTime(stnkYear, taxDueDate.month, taxDueDate.day);
+
+          if (plate.monthYear != null && plate.monthYear!.isNotEmpty) {
+            final cleanMY = plate.monthYear!.replaceAll(RegExp(r'[^0-9]'), '');
+            if (cleanMY.length >= 4) {
+              final m = int.tryParse(cleanMY.substring(0, 2)) ?? taxDueDate.month;
+              final ySub = int.tryParse(cleanMY.substring(2)) ?? (stnkYear % 100);
+              final y = ySub < 100 ? (2000 + ySub) : ySub;
+              stnkDueDate = DateTime(y, m, taxDueDate.day);
+            }
+          }
+
           final isTaxActive = pajak['aktif'] == true || taxDueDate.isAfter(DateTime.now());
           final numberInt = int.tryParse(plate.number) ?? 1000;
           final isMotor = numberInt >= 2000 && numberInt <= 6999;
           final vehicleType = isMotor ? 'Sepeda Motor' : 'Mobil Penumpang';
-          final monthYearStr = '${taxDueDate.month.toString().padLeft(2, '0')}.${(taxDueDate.year % 100).toString().padLeft(2, '0')}';
+          final monthYearStr = '${stnkDueDate.month.toString().padLeft(2, '0')}.${(stnkDueDate.year % 100).toString().padLeft(2, '0')}';
 
           return VehicleTaxInfo(
             plateNumber: plate.fullPlate,
@@ -766,7 +781,7 @@ class VehicleTaxService {
             opsenDenda: opsenDenda,
             totalTax: totalTax,
             taxDueDate: taxDueDate,
-            stnkDueDate: taxDueDate.add(const Duration(days: 365 * 4)),
+            stnkDueDate: stnkDueDate,
             isTaxActive: isTaxActive,
             officialPortalUrl: meta.portalUrl,
             officialSamsatName: meta.samsatName,
