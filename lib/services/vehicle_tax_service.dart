@@ -501,39 +501,74 @@ class VehicleTaxService {
     final firstSuffix = cleanSuffix.isNotEmpty ? cleanSuffix[0] : '';
 
     if (cleanPrefix == 'B') {
+      // 1. BEKASI (JAWA BARAT)
+      // Kota Bekasi: K
+      // Kab. Bekasi (Cikarang / Tambun): F
       if (firstSuffix == 'K') {
         return const RegionMeta(
           prefix: 'B',
-          regionName: 'Kota / Kab. Bekasi',
+          regionName: 'Kota Bekasi',
           provinceName: 'Jawa Barat',
           portalUrl: 'https://bapenda.jabarprov.go.id/infopkb/',
-          samsatName: 'Samsat Kota / Kab. Bekasi (SAMBARA / Sapawarga)',
+          samsatName: 'Samsat Kota Bekasi (Bapenda Jabar)',
         );
-      } else if (firstSuffix == 'Z') {
+      } else if (firstSuffix == 'F') {
+        return const RegionMeta(
+          prefix: 'B',
+          regionName: 'Kabupaten Bekasi (Cikarang)',
+          provinceName: 'Jawa Barat',
+          portalUrl: 'https://bapenda.jabarprov.go.id/infopkb/',
+          samsatName: 'Samsat Kab. Bekasi / Cikarang (Bapenda Jabar)',
+        );
+      }
+      // 2. DEPOK (JAWA BARAT)
+      // Depok / Cinere / Cimanggis: Z atau E
+      else if (firstSuffix == 'Z' || firstSuffix == 'E') {
         return const RegionMeta(
           prefix: 'B',
           regionName: 'Kota Depok (Depok / Cinere)',
           provinceName: 'Jawa Barat',
           portalUrl: 'https://bapenda.jabarprov.go.id/infopkb/',
-          samsatName: 'Samsat Depok / Cinere (SAMBARA)',
+          samsatName: 'Samsat Depok / Cinere (Bapenda Jabar)',
         );
-      } else if (firstSuffix == 'W' || firstSuffix == 'C' || firstSuffix == 'V' || firstSuffix == 'N') {
+      }
+      // 3. TANGERANG RAYA (BANTEN)
+      // Kota Tangerang: C, V | Tangsel: W | Kab. Tangerang: N, G
+      else if (firstSuffix == 'W' || firstSuffix == 'C' || firstSuffix == 'V' || firstSuffix == 'N' || firstSuffix == 'G') {
         return const RegionMeta(
           prefix: 'B',
-          regionName: 'Kota / Kab. Tangerang & Tangsel',
+          regionName: 'Tangerang / Tangsel (Banten)',
           provinceName: 'Banten',
           portalUrl: 'https://ditlantas.banten.polri.go.id/',
-          samsatName: 'Samsat Cikokol / Serpong / Ciputat',
+          samsatName: 'Samsat Tangerang / Serpong / Cikokol (Banten)',
         );
-      } else if (firstSuffix == 'U' || firstSuffix == 'B') {
+      }
+      // 4. DKI JAKARTA
+      else if (firstSuffix == 'U' || firstSuffix == 'A') {
         return const RegionMeta(
           prefix: 'B',
-          regionName: 'Jakarta Utara / Barat',
+          regionName: 'Jakarta Utara',
           provinceName: 'DKI Jakarta',
           portalUrl: 'https://samsat-pkb2.jakarta.go.id/',
           samsatName: 'Bapenda DKI Jakarta / e-Samsat Jakarta',
         );
-      } else if (firstSuffix == 'P' || firstSuffix == 'S') {
+      } else if (firstSuffix == 'B' || firstSuffix == 'J') {
+        return const RegionMeta(
+          prefix: 'B',
+          regionName: 'Jakarta Barat',
+          provinceName: 'DKI Jakarta',
+          portalUrl: 'https://samsat-pkb2.jakarta.go.id/',
+          samsatName: 'Bapenda DKI Jakarta / e-Samsat Jakarta',
+        );
+      } else if (firstSuffix == 'P' || firstSuffix == 'Q') {
+        return const RegionMeta(
+          prefix: 'B',
+          regionName: 'Jakarta Pusat',
+          provinceName: 'DKI Jakarta',
+          portalUrl: 'https://samsat-pkb2.jakarta.go.id/',
+          samsatName: 'Bapenda DKI Jakarta / e-Samsat Jakarta',
+        );
+      } else if (firstSuffix == 'S' || firstSuffix == 'R') {
         return const RegionMeta(
           prefix: 'B',
           regionName: 'Jakarta Selatan',
@@ -541,18 +576,10 @@ class VehicleTaxService {
           portalUrl: 'https://samsat-pkb2.jakarta.go.id/',
           samsatName: 'Bapenda DKI Jakarta / e-Samsat Jakarta',
         );
-      } else if (firstSuffix == 'T' || firstSuffix == 'E') {
+      } else if (firstSuffix == 'T' || firstSuffix == 'O' || firstSuffix == 'M') {
         return const RegionMeta(
           prefix: 'B',
           regionName: 'Jakarta Timur',
-          provinceName: 'DKI Jakarta',
-          portalUrl: 'https://samsat-pkb2.jakarta.go.id/',
-          samsatName: 'Bapenda DKI Jakarta / e-Samsat Jakarta',
-        );
-      } else if (firstSuffix == 'Q' || firstSuffix == 'H') {
-        return const RegionMeta(
-          prefix: 'B',
-          regionName: 'Jakarta Pusat',
           provinceName: 'DKI Jakarta',
           portalUrl: 'https://samsat-pkb2.jakarta.go.id/',
           samsatName: 'Bapenda DKI Jakarta / e-Samsat Jakarta',
@@ -662,9 +689,9 @@ class VehicleTaxService {
       String area = 'jabar';
       if (cleanPrefix == 'AB') {
         area = 'diy';
-      } else if (cleanPrefix == 'A' || (cleanPrefix == 'B' && (firstSuffix == 'W' || firstSuffix == 'C' || firstSuffix == 'V' || firstSuffix == 'N'))) {
+      } else if (cleanPrefix == 'A' || (cleanPrefix == 'B' && (firstSuffix == 'W' || firstSuffix == 'C' || firstSuffix == 'V' || firstSuffix == 'N' || firstSuffix == 'G'))) {
         area = 'banten';
-      } else if (cleanPrefix == 'D' || cleanPrefix == 'E' || cleanPrefix == 'F' || cleanPrefix == 'T' || cleanPrefix == 'Z' || (cleanPrefix == 'B' && (firstSuffix == 'K' || firstSuffix == 'Z'))) {
+      } else if (cleanPrefix == 'D' || cleanPrefix == 'E' || cleanPrefix == 'F' || cleanPrefix == 'T' || cleanPrefix == 'Z' || (cleanPrefix == 'B' && (firstSuffix == 'K' || firstSuffix == 'F' || firstSuffix == 'Z' || firstSuffix == 'E'))) {
         area = 'jabar';
       } else {
         area = 'jabar';

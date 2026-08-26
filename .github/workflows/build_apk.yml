@@ -53,14 +53,14 @@ jobs:
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/heads/main') || startsWith(github.ref, 'refs/heads/master')
         with:
-          tag_name: v1.1.2
-          name: 'MaoneArt Scanner v1.1.2 (Release)'
+          tag_name: v1.1.3
+          name: 'MaoneArt Scanner v1.1.3 (Release)'
           body: |
-            ## 📄 MaoneArt Scanner & AI OCR - Android Release APK (v1.1.2)
+            ## 📄 MaoneArt Scanner & AI OCR - Android Release APK (v1.1.3)
             
-            - **Integrasi Langsung In-App Browser Bapenda Jabar Info PKB**: Pengecekan pajak resmi wilayah Jawa Barat (Plat D, E, F, T, Z, B Bekasi & Depok) langsung ke portal resmi Bapenda Jabar di dalam aplikasi tanpa keluar browser.
-            - **Auto-Copy Nomor Plat Cerdas**: Nomor plat kendaraan yang dipindai otomatis disalin ke clipboard sehingga pengguna tinggal tempel pada form verifikasi Samsat.
-            - **Dukungan e-Samsat Multi-Provinsi**: Deteksi otomatis untuk DKI Jakarta, Jawa Tengah (SAKPOLE), Jawa Timur, DI Yogyakarta, Banten, Bali, dan SIGNAL Nasional.
+            - **Pemetaan Presisi Plat B Wilayah Jawa Barat**: Mendeteksi akurat seluruh plat B Jawa Barat untuk Kota Bekasi (akhiran `K`), Kabupaten Bekasi / Cikarang (akhiran `F`), dan Kota Depok / Cinere (akhiran `Z` & `E`) langsung diarahkan ke Bapenda Jabar (Info PKB).
+            - **Integrasi In-App Browser Bapenda Jabar**: Pengecekan pajak resmi tanpa harus keluar ke browser eksternal, lengkap dengan auto-copy nomor plat.
+            - **Penyempurnaan Deteksi Suffix Plat B**: Memisahkan presisi wilayah DKI Jakarta, Jawa Barat, dan Banten (Tangerang Raya).
             
             Aplikasi Scanner Dokumen Pintar berbasis Flutter dengan deteksi kertas otomatis, auto-crop, perspektif transformasi, ekstraksi teks OCR offline, dan ekspor multi-page PDF!
           files: build/app/outputs/flutter-apk/app-release.apk
