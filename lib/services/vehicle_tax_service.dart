@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:math';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import '../models/vehicle_tax.dart';
+import 'captcha_solver_service.dart';
 
 class RegionMeta {
   final String prefix;
