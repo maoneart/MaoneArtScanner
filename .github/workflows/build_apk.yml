@@ -53,13 +53,14 @@ jobs:
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/heads/main') || startsWith(github.ref, 'refs/heads/master')
         with:
-          tag_name: v1.1.1
-          name: 'MaoneArt Scanner v1.1.1 (Release)'
+          tag_name: v1.1.2
+          name: 'MaoneArt Scanner v1.1.2 (Release)'
           body: |
-            ## 📄 MaoneArt Scanner & AI OCR - Android Release APK (v1.1.1)
+            ## 📄 MaoneArt Scanner & AI OCR - Android Release APK (v1.1.2)
             
-            - **Desain Baru Scanner FAB (Duo Action Capsule Pill)**: Tombol pemindai kamera dan impor galeri dirancang menjadi kapsul pill biru modern yang ringkas dan elegan sesuai referensi desain pengguna.
-            - **Popup Menu Titik 3 Header Rapi**: Memindahkan menu Cek Pajak Kendaraan dan Informasi Aplikasi ke dalam Popup Menu (titik 3) di AppBar atas agar tampilan header semakin bersih dan profesional.
+            - **Integrasi Langsung In-App Browser Bapenda Jabar Info PKB**: Pengecekan pajak resmi wilayah Jawa Barat (Plat D, E, F, T, Z, B Bekasi & Depok) langsung ke portal resmi Bapenda Jabar di dalam aplikasi tanpa keluar browser.
+            - **Auto-Copy Nomor Plat Cerdas**: Nomor plat kendaraan yang dipindai otomatis disalin ke clipboard sehingga pengguna tinggal tempel pada form verifikasi Samsat.
+            - **Dukungan e-Samsat Multi-Provinsi**: Deteksi otomatis untuk DKI Jakarta, Jawa Tengah (SAKPOLE), Jawa Timur, DI Yogyakarta, Banten, Bali, dan SIGNAL Nasional.
             
             Aplikasi Scanner Dokumen Pintar berbasis Flutter dengan deteksi kertas otomatis, auto-crop, perspektif transformasi, ekstraksi teks OCR offline, dan ekspor multi-page PDF!
           files: build/app/outputs/flutter-apk/app-release.apk

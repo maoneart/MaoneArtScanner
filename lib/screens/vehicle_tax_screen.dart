@@ -204,19 +204,52 @@ class _VehicleTaxScreenState extends ConsumerState<VehicleTaxScreen> {
 
   Future<void> _openOfficialPortal() async {
     if (_taxInfo == null) return;
+    
+    // Salin nomor plat otomatis ke clipboard agar user tinggal paste di web Bapenda
+    await Clipboard.setData(ClipboardData(text: _taxInfo!.plateNumber));
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              const Icon(Icons.copy_rounded, color: Colors.black, size: 18),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'Plat ${_taxInfo!.plateNumber} disalin! Membuka ${_taxInfo!.officialSamsatName}...',
+                  style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
+          ),
+          backgroundColor: AppTheme.accentEmerald,
+          duration: const Duration(seconds: 3),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        ),
+      );
+    }
+
     final Uri url = Uri.parse(_taxInfo!.officialPortalUrl);
     try {
-      if (await canLaunchUrl(url)) {
+      final launched = await launchUrl(
+        url,
+        mode: LaunchMode.inAppBrowserView,
+        browserConfiguration: const BrowserConfiguration(showTitle: true),
+      );
+      if (!launched) {
         await launchUrl(url, mode: LaunchMode.externalApplication);
-      } else {
-        await launchUrl(url, mode: LaunchMode.platformDefault);
       }
-    } catch (e) {
-      if (mounted) {
-        Clipboard.setData(ClipboardData(text: _taxInfo!.officialPortalUrl));
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Link portal e-Samsat disalin ke clipboard')),
-        );
+    } catch (_) {
+      try {
+        await launchUrl(url, mode: LaunchMode.externalApplication);
+      } catch (e) {
+        if (mounted) {
+          Clipboard.setData(ClipboardData(text: _taxInfo!.officialPortalUrl));
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Link portal e-Samsat disalin ke clipboard')),
+          );
+        }
       }
     }
   }
@@ -761,6 +794,41 @@ Diperiksa via MaoneArt Scanner & e-Samsat
         ),
         const SizedBox(height: 20),
 
+        // Info Banner Khusus Wilayah (Jabar / Lainnya)
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          decoration: BoxDecoration(
+            color: info.provinceName == 'Jawa Barat'
+                ? AppTheme.accentEmerald.withValues(alpha: 0.1)
+                : Colors.blueAccent.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: info.provinceName == 'Jawa Barat'
+                  ? AppTheme.accentEmerald.withValues(alpha: 0.3)
+                  : Colors.blueAccent.withValues(alpha: 0.3),
+            ),
+          ),
+          child: Row(
+            children: [
+              Icon(
+                info.provinceName == 'Jawa Barat' ? Icons.verified_user_rounded : Icons.info_outline_rounded,
+                color: info.provinceName == 'Jawa Barat' ? AppTheme.accentEmerald : Colors.lightBlueAccent,
+                size: 20,
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  info.provinceName == 'Jawa Barat'
+                      ? 'Khusus Jawa Barat: Klik tombol di bawah untuk membuka Info PKB Bapenda Jabar di dalam aplikasi (Plat otomatis disalin).'
+                      : 'Wilayah ${info.provinceName}: Klik tombol di bawah untuk membuka ${info.officialSamsatName} (Plat otomatis disalin).',
+                  style: GoogleFonts.inter(color: Colors.white70, fontSize: 11),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+
         // Action Buttons: Open Official e-Samsat & Save Note
         Row(
           children: [
@@ -795,7 +863,9 @@ Diperiksa via MaoneArt Scanner & e-Samsat
                   ),
                   icon: const Icon(Icons.open_in_browser_rounded, color: Colors.black, size: 18),
                   label: Text(
-                    'Portal e-Samsat',
+                    info.provinceName == 'Jawa Barat'
+                        ? 'Bapenda Jabar'
+                        : (info.provinceName == 'DKI Jakarta' ? 'e-Samsat DKI' : 'Portal e-Samsat'),
                     style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 13),
                   ),
                 ),

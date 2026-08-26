@@ -59,35 +59,35 @@ class VehicleTaxService {
       prefix: 'D',
       regionName: 'Kota & Kab. Bandung, Cimahi, Bandung Barat',
       provinceName: 'Jawa Barat',
-      portalUrl: 'https://bapenda.jabarprov.go.id/sambara/',
+      portalUrl: 'https://bapenda.jabarprov.go.id/infopkb/',
       samsatName: 'Bapenda Jabar (SAMBARA / Sapawarga)',
     ),
     'E': RegionMeta(
       prefix: 'E',
       regionName: 'Cirebon, Indramayu, Majalengka, Kuningan',
       provinceName: 'Jawa Barat',
-      portalUrl: 'https://bapenda.jabarprov.go.id/sambara/',
+      portalUrl: 'https://bapenda.jabarprov.go.id/infopkb/',
       samsatName: 'Bapenda Jabar (SAMBARA)',
     ),
     'F': RegionMeta(
       prefix: 'F',
       regionName: 'Bogor, Sukabumi, Cianjur',
       provinceName: 'Jawa Barat',
-      portalUrl: 'https://bapenda.jabarprov.go.id/sambara/',
+      portalUrl: 'https://bapenda.jabarprov.go.id/infopkb/',
       samsatName: 'Bapenda Jabar (SAMBARA)',
     ),
     'T': RegionMeta(
       prefix: 'T',
       regionName: 'Karawang, Purwakarta, Subang',
       provinceName: 'Jawa Barat',
-      portalUrl: 'https://bapenda.jabarprov.go.id/sambara/',
+      portalUrl: 'https://bapenda.jabarprov.go.id/infopkb/',
       samsatName: 'Bapenda Jabar (SAMBARA)',
     ),
     'Z': RegionMeta(
       prefix: 'Z',
       regionName: 'Garut, Tasikmalaya, Ciamis, Banjar, Pangandaran',
       provinceName: 'Jawa Barat',
-      portalUrl: 'https://bapenda.jabarprov.go.id/sambara/',
+      portalUrl: 'https://bapenda.jabarprov.go.id/infopkb/',
       samsatName: 'Bapenda Jabar (SAMBARA)',
     ),
 
@@ -506,7 +506,7 @@ class VehicleTaxService {
           prefix: 'B',
           regionName: 'Kota / Kab. Bekasi',
           provinceName: 'Jawa Barat',
-          portalUrl: 'https://bapenda.jabarprov.go.id/sambara/',
+          portalUrl: 'https://bapenda.jabarprov.go.id/infopkb/',
           samsatName: 'Samsat Kota / Kab. Bekasi (SAMBARA / Sapawarga)',
         );
       } else if (firstSuffix == 'Z') {
@@ -514,7 +514,7 @@ class VehicleTaxService {
           prefix: 'B',
           regionName: 'Kota Depok (Depok / Cinere)',
           provinceName: 'Jawa Barat',
-          portalUrl: 'https://bapenda.jabarprov.go.id/sambara/',
+          portalUrl: 'https://bapenda.jabarprov.go.id/infopkb/',
           samsatName: 'Samsat Depok / Cinere (SAMBARA)',
         );
       } else if (firstSuffix == 'W' || firstSuffix == 'C' || firstSuffix == 'V' || firstSuffix == 'N') {
@@ -564,7 +564,7 @@ class VehicleTaxService {
           prefix: 'F',
           regionName: 'Kota Bogor',
           provinceName: 'Jawa Barat',
-          portalUrl: 'https://bapenda.jabarprov.go.id/sambara/',
+          portalUrl: 'https://bapenda.jabarprov.go.id/infopkb/',
           samsatName: 'Samsat Kota Bogor (SAMBARA / Sapawarga)',
         );
       } else if (firstSuffix == 'S' || firstSuffix == 'T' || firstSuffix == 'U' || firstSuffix == 'V') {
@@ -572,7 +572,7 @@ class VehicleTaxService {
           prefix: 'F',
           regionName: 'Kota / Kab. Sukabumi',
           provinceName: 'Jawa Barat',
-          portalUrl: 'https://bapenda.jabarprov.go.id/sambara/',
+          portalUrl: 'https://bapenda.jabarprov.go.id/infopkb/',
           samsatName: 'Samsat Sukabumi (SAMBARA)',
         );
       } else if (firstSuffix == 'W' || firstSuffix == 'X' || firstSuffix == 'Y' || firstSuffix == 'Z') {
@@ -580,7 +580,7 @@ class VehicleTaxService {
           prefix: 'F',
           regionName: 'Kabupaten Cianjur',
           provinceName: 'Jawa Barat',
-          portalUrl: 'https://bapenda.jabarprov.go.id/sambara/',
+          portalUrl: 'https://bapenda.jabarprov.go.id/infopkb/',
           samsatName: 'Samsat Cianjur (SAMBARA)',
         );
       } else {
@@ -588,7 +588,7 @@ class VehicleTaxService {
           prefix: 'F',
           regionName: 'Kabupaten Bogor (Cibinong / Cileungsi)',
           provinceName: 'Jawa Barat',
-          portalUrl: 'https://bapenda.jabarprov.go.id/sambara/',
+          portalUrl: 'https://bapenda.jabarprov.go.id/infopkb/',
           samsatName: 'Samsat Kab. Bogor / Cibinong (SAMBARA)',
         );
       }
@@ -598,7 +598,7 @@ class VehicleTaxService {
           prefix: 'D',
           regionName: 'Kota Bandung',
           provinceName: 'Jawa Barat',
-          portalUrl: 'https://bapenda.jabarprov.go.id/sambara/',
+          portalUrl: 'https://bapenda.jabarprov.go.id/infopkb/',
           samsatName: 'Samsat Kota Bandung (SAMBARA)',
         );
       } else {
@@ -606,7 +606,7 @@ class VehicleTaxService {
           prefix: 'D',
           regionName: 'Kab. Bandung / Kota Cimahi / Bandung Barat',
           provinceName: 'Jawa Barat',
-          portalUrl: 'https://bapenda.jabarprov.go.id/sambara/',
+          portalUrl: 'https://bapenda.jabarprov.go.id/infopkb/',
           samsatName: 'Samsat Soreang / Cimahi (SAMBARA)',
         );
       }
