@@ -75,20 +75,6 @@ class PdfService {
         );
       }
 
-      if (pdf.document.pages.isEmpty) {
-        pdf.addPage(
-          pw.Page(
-            pageFormat: PdfPageFormat.a4,
-            build: (context) => pw.Center(
-              child: pw.Text(
-                'Halaman dokumen tidak ditemukan atau file gambar telah dipindahkan.',
-                style: const pw.TextStyle(fontSize: 14, color: PdfColors.grey700),
-              ),
-            ),
-          ),
-        );
-      }
-
       final outputDir = await getApplicationDocumentsDirectory();
       final sanitizedTitle = title.replaceAll(RegExp(r'[\\/:*?"<>|]'), '_');
       final fileName = '${sanitizedTitle}_${DateTime.now().millisecondsSinceEpoch}.pdf';
@@ -109,9 +95,11 @@ class PdfService {
     required List<String> imagePaths,
     required PaperSizeOption paperSize,
   }) async {
+    bool hasAddedPage = false;
     for (final imagePath in imagePaths) {
       final file = File(imagePath);
       if (!await file.exists()) continue;
+      hasAddedPage = true;
 
       final Uint8List imageBytes = await file.readAsBytes();
       final pw.MemoryImage imageProvider = pw.MemoryImage(imageBytes);
@@ -247,6 +235,21 @@ class PdfService {
         );
       }
     }
+
+    if (!hasAddedPage) {
+      pdf.addPage(
+        pw.Page(
+          pageFormat: paperSize.format ?? PdfPageFormat.a4,
+          margin: const pw.EdgeInsets.all(16),
+          build: (context) => pw.Center(
+            child: pw.Text(
+              'Halaman dokumen tidak ditemukan atau file gambar telah dipindahkan.',
+              style: const pw.TextStyle(fontSize: 12, color: PdfColors.grey700),
+            ),
+          ),
+        ),
+      );
+    }
   }
 
   /// Membuat Dokumen Teks Bersih (Word-to-PDF Style)
@@ -370,9 +373,11 @@ class PdfService {
     required List<String> imagePaths,
     required PaperSizeOption paperSize,
   }) async {
+    bool hasAddedPage = false;
     for (final imagePath in imagePaths) {
       final file = File(imagePath);
       if (!await file.exists()) continue;
+      hasAddedPage = true;
 
       final Uint8List imageBytes = await file.readAsBytes();
       final pw.MemoryImage imageProvider = pw.MemoryImage(imageBytes);
@@ -406,6 +411,21 @@ class PdfService {
           ),
         );
       }
+    }
+
+    if (!hasAddedPage) {
+      pdf.addPage(
+        pw.Page(
+          pageFormat: paperSize.format ?? PdfPageFormat.a4,
+          margin: const pw.EdgeInsets.all(16),
+          build: (context) => pw.Center(
+            child: pw.Text(
+              'Halaman dokumen tidak ditemukan atau file gambar telah dipindahkan.',
+              style: const pw.TextStyle(fontSize: 12, color: PdfColors.grey700),
+            ),
+          ),
+        ),
+      );
     }
   }
 
