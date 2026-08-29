@@ -75,6 +75,20 @@ class PdfService {
         );
       }
 
+      if (pdf.document.pages.isEmpty) {
+        pdf.addPage(
+          pw.Page(
+            pageFormat: PdfPageFormat.a4,
+            build: (context) => pw.Center(
+              child: pw.Text(
+                'Halaman dokumen tidak ditemukan atau file gambar telah dipindahkan.',
+                style: const pw.TextStyle(fontSize: 14, color: PdfColors.grey700),
+              ),
+            ),
+          ),
+        );
+      }
+
       final outputDir = await getApplicationDocumentsDirectory();
       final sanitizedTitle = title.replaceAll(RegExp(r'[\\/:*?"<>|]'), '_');
       final fileName = '${sanitizedTitle}_${DateTime.now().millisecondsSinceEpoch}.pdf';

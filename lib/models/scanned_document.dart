@@ -70,19 +70,22 @@ class ScannedDocument {
 
   factory ScannedDocument.fromMap(Map<String, dynamic> map) {
     return ScannedDocument(
-      id: map['id'] ?? '',
-      title: map['title'] ?? 'Dokumen Tanpa Judul',
+      id: map['id']?.toString() ?? '',
+      title: map['title']?.toString() ?? 'Dokumen Tanpa Judul',
       createdAt: map['createdAt'] != null 
-          ? DateTime.parse(map['createdAt']) 
+          ? (DateTime.tryParse(map['createdAt'].toString()) ?? DateTime.now())
           : DateTime.now(),
       updatedAt: map['updatedAt'] != null 
-          ? DateTime.parse(map['updatedAt']) 
+          ? (DateTime.tryParse(map['updatedAt'].toString()) ?? DateTime.now())
           : DateTime.now(),
-      category: map['category'] ?? 'Dokumen',
-      pagePaths: List<String>.from(map['pagePaths'] ?? []),
-      ocrText: map['ocrText'] ?? '',
-      pdfPath: map['pdfPath'],
-      notes: map['notes'] ?? '',
+      category: map['category']?.toString() ?? 'Dokumen',
+      pagePaths: (map['pagePaths'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          [],
+      ocrText: map['ocrText']?.toString() ?? '',
+      pdfPath: map['pdfPath']?.toString(),
+      notes: map['notes']?.toString() ?? '',
     );
   }
 

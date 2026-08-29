@@ -108,6 +108,71 @@ class _OcrScreenState extends ConsumerState<OcrScreen> {
     Share.share(text, subject: 'Hasil OCR - ${widget.document.title}');
   }
 
+  TextSpan _buildHighlightedTextSpan(String text, String query) {
+    if (query.trim().isEmpty) {
+      return TextSpan(
+        text: text,
+        style: GoogleFonts.inter(
+          color: const Color(0xFFE2E8F0),
+          fontSize: 15,
+          height: 1.6,
+        ),
+      );
+    }
+
+    final List<TextSpan> spans = [];
+    final lowerText = text.toLowerCase();
+    final lowerQuery = query.toLowerCase().trim();
+    int start = 0;
+
+    while (start < text.length) {
+      final index = lowerText.indexOf(lowerQuery, start);
+      if (index == -1) {
+        spans.add(
+          TextSpan(
+            text: text.substring(start),
+            style: GoogleFonts.inter(
+              color: const Color(0xFFE2E8F0),
+              fontSize: 15,
+              height: 1.6,
+            ),
+          ),
+        );
+        break;
+      }
+
+      if (index > start) {
+        spans.add(
+          TextSpan(
+            text: text.substring(start, index),
+            style: GoogleFonts.inter(
+              color: const Color(0xFFE2E8F0),
+              fontSize: 15,
+              height: 1.6,
+            ),
+          ),
+        );
+      }
+
+      spans.add(
+        TextSpan(
+          text: text.substring(index, index + lowerQuery.length),
+          style: GoogleFonts.inter(
+            color: Colors.black,
+            backgroundColor: AppTheme.accentCyan,
+            fontWeight: FontWeight.bold,
+            fontSize: 15,
+            height: 1.6,
+          ),
+        ),
+      );
+
+      start = index + lowerQuery.length;
+    }
+
+    return TextSpan(children: spans);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -213,17 +278,17 @@ class _OcrScreenState extends ConsumerState<OcrScreen> {
                                 ),
                               )
                             : SingleChildScrollView(
-                                child: SelectableText(
+                                child: SelectableText.rich(
                                   _textController.text.isEmpty
-                                      ? 'Belum ada teks yang diekstrak. Tekan tombol Scan Ulang untuk membaca dokumen.'
-                                      : _textController.text,
-                                  style: GoogleFonts.inter(
-                                    color: _textController.text.isEmpty
-                                        ? const Color(0xFF64748B)
-                                        : const Color(0xFFE2E8F0),
-                                    fontSize: 15,
-                                    height: 1.6,
-                                  ),
+                                      ? TextSpan(
+                                          text: 'Belum ada teks yang diekstrak. Tekan tombol Scan Ulang untuk membaca dokumen.',
+                                          style: GoogleFonts.inter(
+                                            color: const Color(0xFF64748B),
+                                            fontSize: 15,
+                                            height: 1.6,
+                                          ),
+                                        )
+                                      : _buildHighlightedTextSpan(_textController.text, _searchQuery),
                                 ),
                               ),
                       ),

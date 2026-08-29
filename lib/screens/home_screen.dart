@@ -168,8 +168,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   void _showInfoModal() {
     MaoneArtModal.showAlertModal(
       context,
-      title: 'MaoneArt Scanner v1.0',
-      message: 'Aplikasi Smart AI Document Scanner dengan Google ML Kit Paper Detection, Perspective Auto-Crop, Offline OCR Text Extractor, dan Multi-Page PDF Exporter.',
+      title: 'MaoneArt Scanner v1.1.2',
+      message: 'Aplikasi Smart AI Document Scanner dengan Google ML Kit Paper Detection, Perspective Auto-Crop, Offline OCR Text Extractor, Multi-Page PDF Exporter, dan Cek Pajak Kendaraan Samsat.',
       icon: Icons.document_scanner_rounded,
       iconColor: AppTheme.accentCyan,
       buttonText: 'Tutup',

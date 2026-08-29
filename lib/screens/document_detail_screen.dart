@@ -216,6 +216,14 @@ class _DocumentDetailScreenState extends ConsumerState<DocumentDetailScreen> {
     );
 
     if (confirm) {
+      if (doc.pagePaths.length <= 1) {
+        await ref.read(documentProvider.notifier).deletePage(doc.id, 0);
+        if (mounted) {
+          Navigator.of(context).pop();
+        }
+        return;
+      }
+
       final oldIndex = _currentPageIndex;
       await ref.read(documentProvider.notifier).deletePage(doc.id, oldIndex);
       if (oldIndex >= doc.pagePaths.length - 1 && oldIndex > 0) {
