@@ -53,17 +53,26 @@ jobs:
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/heads/main') || startsWith(github.ref, 'refs/heads/master')
         with:
-          tag_name: v1.1.2
-          name: 'MaoneArt Scanner v1.1.2 (Release)'
+          tag_name: v1.2.0
+          name: 'MaoneArt Scanner v1.2.0 (Precision Cropper & PDF Tools Suite)'
           body: |
-            ## 📄 MaoneArt Scanner & AI OCR - Android Release APK (v1.1.2)
-            
-            - **Integrasi Langsung In-App Browser Bapenda Jabar Info PKB**: Pengecekan pajak resmi wilayah Jawa Barat (Plat D, E, F, T, Z, B Bekasi & Depok) langsung ke portal resmi Bapenda Jabar di dalam aplikasi tanpa keluar browser.
-            - **Pemetaan Presisi Plat B Wilayah Jawa Barat**: Mendeteksi akurat seluruh plat B Jawa Barat untuk Kota Bekasi (akhiran `K`), Kabupaten Bekasi / Cikarang (akhiran `F`), dan Kota Depok / Cinere (akhiran `Z` & `E`).
-            - **Live Samsat Gateway Terintegrasi**: Penarikan data real-time resmi tanpa captcha solver tambahan untuk Jawa Barat, Banten, dan DI Yogyakarta.
-            - **Auto-Copy Nomor Plat Cerdas**: Nomor plat kendaraan yang dipindai otomatis disalin ke clipboard sehingga pengguna tinggal tempel pada form verifikasi Samsat.
-            
-            Aplikasi Scanner Dokumen Pintar berbasis Flutter dengan deteksi kertas otomatis, auto-crop, perspektif transformasi, ekstraksi teks OCR offline, dan ekspor multi-page PDF!
+            ## 📄 MaoneArt Scanner v1.2.0 — Precision Cropper & PDF Tools Suite
+
+            ### ✂️ 1. Precision Document Crop & Straightener Editor
+            - **Interactive 8-Point Touch Handles**: Pemotong dokumen presisi dengan grid rule-of-thirds dan touch-draggable box.
+            - **Fine Degree Angle Straightener**: Slider pelurus sudut halus (-30.0° s/d +30.0°) untuk memperbaiki dokumen atau struk yang miring saat difoto.
+            - **Preset Aspect Ratio Cepat**: Mendukung A4 (1:1.414), KTP / ID Card (85.6 : 54), Persegi 1:1, 4:3, 16:9, dan Bebas (Freeform).
+            - **Pixel-Perfect Baking**: Memperbaiki orientasi EXIF dan merender ulang piksel JPEG kualitas tinggi (95%).
+
+            ### 📑 2. Full PDF Tools Suite Terintegrasi
+            - **Baca PDF (In-App PDF Viewer)**: Buka file PDF dari memori HP dengan dukungan pinch-to-zoom, sharing, dan pencetakan langsung.
+            - **Kompres PDF**: 3 pilihan kompresi (Ringan, Standar, Maksimal) dengan laporan penghematan ukuran file.
+            - **Pisah PDF (Split)**: Pemisahan halaman dokumen fleksibel (Pilih Semua, Ganjil, Genap, atau Halaman Kustom).
+            - **Gabung PDF (Merge)**: Penggabungan multi-file PDF menjadi 1 file utuh dengan urutan reorderable drag-and-drop.
+
+            ### 🎨 3. Redesign Total ke SHADCN UI (Zinc Theme)
+            - Mengganti seluruh efek glassmorphic blur berat menjadi arsitektur Shadcn UI minimalis (`#09090B` Zinc Dark).
+            - Border solid 1px `#27272A`, tipografi tajam *Plus Jakarta Sans* & *JetBrains Mono*, dock bar jempol ergonomis, dan MaoneArt Symmetrical Modal 2-kolom.
           files: build/app/outputs/flutter-apk/app-release.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

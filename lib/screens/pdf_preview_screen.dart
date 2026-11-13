@@ -72,7 +72,7 @@ class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
       appBar: AppBar(
         title: Text(
           'Export PDF',
-          style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 18),
+          style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 16),
         ),
         actions: [
           IconButton(
@@ -98,14 +98,14 @@ class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
                   // Mode Selection Bar (Searchable vs Word-style vs Pure Image)
                   GlassContainer(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    borderRadius: 14,
+                    borderRadius: 10,
                     child: Row(
                       children: [
-                        const Icon(Icons.auto_awesome_rounded, color: AppTheme.accentCyan, size: 18),
+                        const Icon(Icons.auto_awesome_rounded, color: AppTheme.accentCyan, size: 16),
                         const SizedBox(width: 8),
                         Text(
                           'Mode PDF:',
-                          style: GoogleFonts.outfit(color: const Color(0xFF94A3B8), fontSize: 13),
+                          style: GoogleFonts.plusJakartaSans(color: AppTheme.textDim, fontSize: 12),
                         ),
                         const SizedBox(width: 8),
                         Expanded(
@@ -121,7 +121,7 @@ class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
                                   child: Text(
                                     mode.label,
                                     overflow: TextOverflow.ellipsis,
-                                    style: GoogleFonts.outfit(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600),
+                                    style: GoogleFonts.plusJakartaSans(color: AppTheme.textMain, fontSize: 12, fontWeight: FontWeight.w600),
                                   ),
                                 );
                               }).toList(),
@@ -141,14 +141,14 @@ class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
                   // Paper Size Selection Bar
                   GlassContainer(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    borderRadius: 14,
+                    borderRadius: 10,
                     child: Row(
                       children: [
-                        const Icon(Icons.description_rounded, color: AppTheme.accentEmerald, size: 18),
+                        const Icon(Icons.description_rounded, color: AppTheme.accentEmerald, size: 16),
                         const SizedBox(width: 8),
                         Text(
                           'Ukuran Kertas:',
-                          style: GoogleFonts.outfit(color: const Color(0xFF94A3B8), fontSize: 13),
+                          style: GoogleFonts.plusJakartaSans(color: AppTheme.textDim, fontSize: 12),
                         ),
                         const SizedBox(width: 8),
                         Expanded(
@@ -162,7 +162,7 @@ class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
                                   value: opt,
                                   child: Text(
                                     opt.label,
-                                    style: GoogleFonts.outfit(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600),
+                                    style: GoogleFonts.plusJakartaSans(color: AppTheme.textMain, fontSize: 12, fontWeight: FontWeight.w600),
                                   ),
                                 );
                               }).toList(),
@@ -191,14 +191,14 @@ class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
                         children: [
                           CircularProgressIndicator(color: AppTheme.accentCyan),
                           SizedBox(height: 16),
-                          Text('Menyusun halaman PDF...', style: TextStyle(color: Color(0xFF94A3B8))),
+                          Text('Menyusun halaman PDF...', style: TextStyle(color: AppTheme.textMuted)),
                         ],
                       ),
                     )
                   : Padding(
                       padding: const EdgeInsets.all(12),
                       child: ClipRRect(
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(12),
                         child: PdfPreview(
                           build: (format) async {
                             final file = File(_generatedPdfPath!);
@@ -221,47 +221,47 @@ class _PdfPreviewScreenState extends ConsumerState<PdfPreviewScreen> {
 
             // Bottom Buttons
             Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: AppTheme.bgCard.withValues(alpha: 0.8),
-                border: Border(top: BorderSide(color: Colors.white.withValues(alpha: 0.1))),
+              padding: const EdgeInsets.all(14),
+              decoration: const BoxDecoration(
+                color: AppTheme.bgCard,
+                border: Border(top: BorderSide(color: AppTheme.border)),
               ),
               child: Row(
                 children: [
                   Expanded(
                     child: SizedBox(
-                      height: 48,
+                      height: 44,
                       child: OutlinedButton.icon(
                         onPressed: _openInApp,
                         style: OutlinedButton.styleFrom(
-                          side: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                          backgroundColor: Colors.white.withValues(alpha: 0.05),
+                          side: const BorderSide(color: AppTheme.border),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                          backgroundColor: AppTheme.bgSurface,
                         ),
-                        icon: const Icon(Icons.open_in_new_rounded, color: Colors.white70, size: 18),
+                        icon: const Icon(Icons.open_in_new_rounded, color: AppTheme.textMuted, size: 16),
                         label: Text(
                           'Buka di PDF Reader',
-                          style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 13),
+                          style: GoogleFonts.plusJakartaSans(color: AppTheme.textMain, fontWeight: FontWeight.w600, fontSize: 12),
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: SizedBox(
-                      height: 48,
+                      height: 44,
                       child: ElevatedButton.icon(
                         onPressed: _sharePdf,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppTheme.accentCyan,
-                          foregroundColor: Colors.black,
+                          backgroundColor: AppTheme.textMain,
+                          foregroundColor: const Color(0xFF09090B),
                           elevation: 0,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                         ),
-                        icon: const Icon(Icons.send_rounded, color: Colors.black, size: 18),
+                        icon: const Icon(Icons.send_rounded, color: Color(0xFF09090B), size: 16),
                         label: Text(
                           'Kirim PDF',
-                          style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 14),
+                          style: GoogleFonts.plusJakartaSans(color: const Color(0xFF09090B), fontWeight: FontWeight.bold, fontSize: 13),
                         ),
                       ),
                     ),

@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:math' as math;
 import 'dart:typed_data';
+import 'package:image/image.dart' as img;
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
@@ -383,9 +384,14 @@ class PdfService {
       final pw.MemoryImage imageProvider = pw.MemoryImage(imageBytes);
 
       if (paperSize == PaperSizeOption.fit) {
+        final decoded = img.decodeImage(imageBytes);
+        final double imgW = decoded?.width.toDouble() ?? 595.0;
+        final double imgH = decoded?.height.toDouble() ?? 842.0;
+        final pageFormat = PdfPageFormat(imgW, imgH, marginAll: 0);
+
         pdf.addPage(
           pw.Page(
-            pageFormat: PdfPageFormat.a4,
+            pageFormat: pageFormat,
             margin: pw.EdgeInsets.zero,
             build: (pw.Context context) {
               return pw.FullPage(

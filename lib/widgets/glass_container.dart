@@ -1,7 +1,8 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../utils/app_theme.dart';
 
+/// SHADCN UI ZINC CARD CONTAINER
+/// Menggantikan Glassmorphic blur berat dengan kartu solid 1px border minimalis
 class GlassContainer extends StatelessWidget {
   final Widget child;
   final double? width;
@@ -9,7 +10,7 @@ class GlassContainer extends StatelessWidget {
   final EdgeInsetsGeometry? padding;
   final EdgeInsetsGeometry? margin;
   final double borderRadius;
-  final double blur;
+  final double blur; // Dipertahankan untuk kompatibilitas signature
   final Color? color;
   final Border? border;
   final List<BoxShadow>? shadows;
@@ -22,8 +23,8 @@ class GlassContainer extends StatelessWidget {
     this.height,
     this.padding,
     this.margin,
-    this.borderRadius = 18,
-    this.blur = 16,
+    this.borderRadius = 12,
+    this.blur = 0,
     this.color,
     this.border,
     this.shadows,
@@ -32,65 +33,51 @@ class GlassContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final defaultBorder = Border.all(
-      color: Colors.white.withValues(alpha: 0.12),
-      width: 1,
+    const defaultBorder = Border.fromBorderSide(
+      BorderSide(color: AppTheme.border, width: 1),
     );
 
-    final content = ClipRRect(
-      borderRadius: BorderRadius.circular(borderRadius),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
-        child: Container(
-          width: width,
-          height: height,
-          padding: padding,
-          decoration: BoxDecoration(
-            color: color ?? AppTheme.bgCard.withValues(alpha: 0.65),
-            borderRadius: BorderRadius.circular(borderRadius),
-            border: border ?? defaultBorder,
-            boxShadow: shadows ?? [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.3),
-                blurRadius: 20,
-                offset: const Offset(0, 8),
-              ),
-            ],
+    final cardContent = Container(
+      width: width,
+      height: height,
+      padding: padding,
+      decoration: BoxDecoration(
+        color: color ?? AppTheme.bgCard,
+        borderRadius: BorderRadius.circular(borderRadius),
+        border: border ?? defaultBorder,
+        boxShadow: shadows ?? const [
+          BoxShadow(
+            color: Color(0x33000000),
+            blurRadius: 10,
+            offset: Offset(0, 4),
           ),
-          child: child,
-        ),
+        ],
       ),
+      child: child,
     );
+
+    if (onTap != null) {
+      return Container(
+        margin: margin,
+        child: Material(
+          color: Colors.transparent,
+          borderRadius: BorderRadius.circular(borderRadius),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(borderRadius),
+            onTap: onTap,
+            child: cardContent,
+          ),
+        ),
+      );
+    }
 
     if (margin != null) {
       return Container(
         margin: margin,
-        child: onTap != null
-            ? Material(
-                color: Colors.transparent,
-                borderRadius: BorderRadius.circular(borderRadius),
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(borderRadius),
-                  onTap: onTap,
-                  child: content,
-                ),
-              )
-            : content,
+        child: cardContent,
       );
     }
 
-    if (onTap != null) {
-      return Material(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.circular(borderRadius),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(borderRadius),
-          onTap: onTap,
-          child: content,
-        ),
-      );
-    }
-
-    return content;
+    return cardContent;
   }
 }

@@ -29,36 +29,23 @@ class CategoryFilterBar extends StatelessWidget {
           return GestureDetector(
             onTap: () => onCategorySelected(category),
             child: AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              duration: const Duration(milliseconds: 150),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
               decoration: BoxDecoration(
-                color: isSelected
-                    ? AppTheme.accentCyan.withValues(alpha: 0.15)
-                    : AppTheme.bgCard.withValues(alpha: 0.6),
-                borderRadius: BorderRadius.circular(20),
+                color: isSelected ? AppTheme.textMain : AppTheme.bgSurface,
+                borderRadius: BorderRadius.circular(8),
                 border: Border.all(
-                  color: isSelected
-                      ? AppTheme.accentCyan
-                      : Colors.white.withValues(alpha: 0.1),
-                  width: isSelected ? 1.5 : 1,
+                  color: isSelected ? AppTheme.textMain : AppTheme.border,
+                  width: 1,
                 ),
-                boxShadow: isSelected
-                    ? [
-                        BoxShadow(
-                          color: AppTheme.accentCyan.withValues(alpha: 0.25),
-                          blurRadius: 10,
-                          offset: const Offset(0, 2),
-                        ),
-                      ]
-                    : null,
               ),
               child: Center(
                 child: Text(
                   category,
-                  style: GoogleFonts.outfit(
-                    color: isSelected ? AppTheme.accentCyan : const Color(0xFF94A3B8),
+                  style: GoogleFonts.plusJakartaSans(
+                    color: isSelected ? const Color(0xFF09090B) : AppTheme.textMuted,
                     fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                    fontSize: 13,
+                    fontSize: 12,
                   ),
                 ),
               ),

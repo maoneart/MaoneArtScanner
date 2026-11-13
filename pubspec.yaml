@@ -1,7 +1,7 @@
 name: maoneart_scanner
-description: "MaoneArt Scanner - Smart AI Document Scanner with Auto Paper Detection, Crop, OCR & PDF Export"
+description: "MaoneArt Scanner - Smart AI Document Scanner, Precision Crop & Straightener, Full PDF Tools Suite (View, Compress, Split, Merge), OCR & Samsat Tax Checker"
 publish_to: 'none'
-version: 1.1.2+12
+version: 1.2.0+13
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -22,15 +22,17 @@ dependencies:
   image_picker: ^1.1.2
   image: ^4.2.0
 
-  # PDF Generation & Printing
+  # PDF Generation, Printing & Manipulation
   pdf: ^3.11.1
   printing: ^5.13.2
+  syncfusion_flutter_pdf: ^28.2.9
 
   # File & Storage
   path_provider: ^2.1.4
   path: ^1.9.0
   shared_preferences: ^2.3.2
   share_plus: ^10.0.0
+  file_picker: ^8.1.4
   open_filex: ^4.5.0
   url_launcher: ^6.3.1
 

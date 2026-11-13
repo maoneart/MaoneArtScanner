@@ -11,6 +11,7 @@ import '../services/scanner_service.dart';
 import '../utils/app_theme.dart';
 import '../widgets/glass_container.dart';
 import '../widgets/maoneart_modal.dart';
+import 'crop_editor_screen.dart';
 import 'ocr_screen.dart';
 import 'pdf_preview_screen.dart';
 
@@ -202,6 +203,27 @@ class _DocumentDetailScreenState extends ConsumerState<DocumentDetailScreen> {
         );
       },
     );
+  }
+
+  Future<void> _handleCropPage(ScannedDocument doc) async {
+    if (_currentPageIndex >= doc.pagePaths.length) return;
+    final currentImagePath = doc.pagePaths[_currentPageIndex];
+
+    final result = await Navigator.of(context).push<bool>(
+      MaterialPageRoute(
+        builder: (_) => CropEditorScreen(
+          imagePath: currentImagePath,
+          title: 'Luruskan & Crop Hal. ${_currentPageIndex + 1}',
+        ),
+      ),
+    );
+
+    if (result == true && mounted) {
+      PaintingBinding.instance.imageCache.clear();
+      PaintingBinding.instance.imageCache.clearLiveImages();
+      setState(() {});
+      ref.read(documentProvider.notifier).refreshDocuments();
+    }
   }
 
   Future<void> _handleDeletePage(ScannedDocument doc) async {
@@ -410,16 +432,43 @@ class _DocumentDetailScreenState extends ConsumerState<DocumentDetailScreen> {
                     style: GoogleFonts.inter(color: const Color(0xFF64748B), fontSize: 12),
                   ),
                   const Spacer(),
+                  GestureDetector(
+                    onTap: () => _handleCropPage(doc),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: AppTheme.bgSurface,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: AppTheme.border),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.crop_rotate_rounded, size: 14, color: AppTheme.accentCyan),
+                          const SizedBox(width: 4),
+                          Text(
+                            'Luruskan',
+                            style: GoogleFonts.plusJakartaSans(
+                              color: AppTheme.textMain,
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
                       color: AppTheme.bgCard,
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: AppTheme.border),
                     ),
                     child: Text(
                       '${_currentPageIndex + 1} / ${doc.pageCount}',
-                      style: GoogleFonts.outfit(
+                      style: GoogleFonts.jetBrainsMono(
                         color: AppTheme.accentCyan,
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
@@ -519,18 +568,24 @@ class _DocumentDetailScreenState extends ConsumerState<DocumentDetailScreen> {
 
             // CamScanner Bottom Action Bar
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-              decoration: BoxDecoration(
-                color: AppTheme.bgCard.withValues(alpha: 0.95),
-                border: Border(top: BorderSide(color: Colors.white.withValues(alpha: 0.1))),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+              decoration: const BoxDecoration(
+                color: AppTheme.bgCard,
+                border: Border(top: BorderSide(color: AppTheme.border)),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   _buildActionButton(
+                    icon: Icons.crop_rotate_rounded,
+                    label: 'Luruskan',
+                    color: AppTheme.accentCyan,
+                    onTap: () => _handleCropPage(doc),
+                  ),
+                  _buildActionButton(
                     icon: Icons.picture_as_pdf_rounded,
                     label: 'Export PDF',
-                    color: AppTheme.accentCyan,
+                    color: AppTheme.textMain,
                     onTap: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(builder: (_) => PdfPreviewScreen(document: doc)),
@@ -581,21 +636,21 @@ class _DocumentDetailScreenState extends ConsumerState<DocumentDetailScreen> {
     required VoidCallback onTap,
   }) {
     return InkWell(
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(8),
       onTap: onTap,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, color: color, size: 22),
+            Icon(icon, color: color, size: 20),
             const SizedBox(height: 4),
             Text(
               label,
-              style: GoogleFonts.outfit(
-                color: Colors.white70,
-                fontSize: 11,
-                fontWeight: FontWeight.w500,
+              style: GoogleFonts.plusJakartaSans(
+                color: AppTheme.textMuted,
+                fontSize: 10.5,
+                fontWeight: FontWeight.w600,
               ),
             ),
           ],

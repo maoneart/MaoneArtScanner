@@ -180,7 +180,7 @@ class _OcrScreenState extends ConsumerState<OcrScreen> {
       appBar: AppBar(
         title: Text(
           'Hasil Ekstraksi OCR',
-          style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 18),
+          style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 16),
         ),
         actions: [
           // Search Toggle
@@ -297,56 +297,56 @@ class _OcrScreenState extends ConsumerState<OcrScreen> {
 
             // Bottom Action Bar
             Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: AppTheme.bgCard.withValues(alpha: 0.8),
+              padding: const EdgeInsets.all(14),
+              decoration: const BoxDecoration(
+                color: AppTheme.bgCard,
                 border: Border(
-                  top: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
+                  top: BorderSide(color: AppTheme.border),
                 ),
               ),
               child: Row(
                 children: [
                   Expanded(
                     child: SizedBox(
-                      height: 48,
+                      height: 44,
                       child: OutlinedButton.icon(
                         onPressed: _copyToClipboard,
                         style: OutlinedButton.styleFrom(
-                          side: BorderSide(color: AppTheme.accentCyan.withValues(alpha: 0.5)),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                          backgroundColor: AppTheme.accentCyan.withValues(alpha: 0.1),
+                          side: const BorderSide(color: AppTheme.border),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                          backgroundColor: AppTheme.bgSurface,
                         ),
-                        icon: const Icon(Icons.copy_rounded, color: AppTheme.accentCyan, size: 18),
+                        icon: const Icon(Icons.copy_rounded, color: AppTheme.accentCyan, size: 16),
                         label: Text(
                           'Salin Teks',
-                          style: GoogleFonts.outfit(
-                            color: AppTheme.accentCyan,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
+                          style: GoogleFonts.plusJakartaSans(
+                            color: AppTheme.textMain,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 13,
                           ),
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: SizedBox(
-                      height: 48,
+                      height: 44,
                       child: ElevatedButton.icon(
                         onPressed: _shareText,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppTheme.accentEmerald,
-                          foregroundColor: Colors.white,
+                          backgroundColor: AppTheme.textMain,
+                          foregroundColor: const Color(0xFF09090B),
                           elevation: 0,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                         ),
-                        icon: const Icon(Icons.share_rounded, color: Colors.white, size: 18),
+                        icon: const Icon(Icons.share_rounded, color: Color(0xFF09090B), size: 16),
                         label: Text(
                           'Bagikan',
-                          style: GoogleFonts.outfit(
-                            color: Colors.white,
+                          style: GoogleFonts.plusJakartaSans(
+                            color: const Color(0xFF09090B),
                             fontWeight: FontWeight.bold,
-                            fontSize: 14,
+                            fontSize: 13,
                           ),
                         ),
                       ),

@@ -1,22 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+/// SHADCN UI DESIGN TOKENS (Zinc Dark Theme)
 class AppTheme {
-  // Background Colors
-  static const Color bgDark = Color(0xFF0B0F19);
-  static const Color bgCard = Color(0xFF131B2E);
-  static const Color bgSurface = Color(0xFF1A233A);
+  // Background & Surface Colors (Zinc Spectrum)
+  static const Color bgDark = Color(0xFF09090B); // Pure Zinc Dark
+  static const Color bgCard = Color(0xFF121215); // Card Surface
+  static const Color bgSurface = Color(0xFF18181B); // Inset & Element Background
+  static const Color bgMuted = Color(0xFF27272A); // Muted Input & Chips
 
-  // Accent Colors
-  static const Color accentCyan = Color(0xFF00F0FF);
-  static const Color accentEmerald = Color(0xFF10B981);
-  static const Color accentPurple = Color(0xFF8B5CF6);
-  static const Color accentAmber = Color(0xFFF59E0B);
-  static const Color accentRose = Color(0xFFF43F5E);
+  // Borders & Dividers
+  static const Color border = Color(0xFF27272A); // Standard 1px solid border
+  static const Color borderHover = Color(0xFF3F3F46); // Active / Hover border
+  static const Color borderLight = Color(0xFF52525B); // Accent border
 
-  // Glassmorphic Gradients
+  // Text Colors
+  static const Color textMain = Color(0xFFFAFAFA); // High Contrast White
+  static const Color textMuted = Color(0xFFA1A1AA); // Secondary Label
+  static const Color textDim = Color(0xFF71717A); // Subtext / Metadata
+
+  // Accents & Status Colors
+  static const Color accentCyan = Color(0xFF38BDF8); // Cyan Accent
+  static const Color accentCyanDark = Color(0xFF0284C7);
+  static const Color accentEmerald = Color(0xFF10B981); // Success
+  static const Color accentPurple = Color(0xFFA855F7); // OCR / Magic
+  static const Color accentAmber = Color(0xFFF59E0B); // Warning / Notes
+  static const Color accentRose = Color(0xFFEF4444); // Danger / Destructive
+
+  // Linear Gradients (Subtle & Monochromatic, Anti-Slop)
   static const LinearGradient primaryGradient = LinearGradient(
-    colors: [Color(0xFF00F0FF), Color(0xFF3B82F6)],
+    colors: [Color(0xFF38BDF8), Color(0xFF0284C7)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
@@ -28,17 +41,7 @@ class AppTheme {
   );
 
   static const LinearGradient purpleGradient = LinearGradient(
-    colors: [Color(0xFF8B5CF6), Color(0xFF6366F1)],
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
-  );
-
-  static const LinearGradient glassBorderGradient = LinearGradient(
-    colors: [
-      Color(0x4000F0FF),
-      Color(0x1AFFFFFF),
-      Color(0x0D000000),
-    ],
+    colors: [Color(0xFFA855F7), Color(0xFF7E22CE)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
@@ -46,9 +49,9 @@ class AppTheme {
   static const LinearGradient scanLaserGradient = LinearGradient(
     colors: [
       Colors.transparent,
-      Color(0x3300F0FF),
-      Color(0xFF00F0FF),
-      Color(0x3300F0FF),
+      Color(0x2038BDF8),
+      Color(0xFF38BDF8),
+      Color(0x2038BDF8),
       Colors.transparent,
     ],
     begin: Alignment.topCenter,
@@ -57,65 +60,96 @@ class AppTheme {
 
   // Typography & ThemeData
   static ThemeData get darkTheme {
-    final textTheme = GoogleFonts.outfitTextTheme(ThemeData.dark().textTheme);
-    
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
       scaffoldBackgroundColor: bgDark,
       primaryColor: accentCyan,
+      canvasColor: bgDark,
+      cardColor: bgCard,
+      dividerColor: border,
       colorScheme: const ColorScheme.dark(
         primary: accentCyan,
         secondary: accentEmerald,
         surface: bgCard,
         error: accentRose,
-        onPrimary: Colors.black,
+        onPrimary: Color(0xFF09090B),
         onSecondary: Colors.white,
-        onSurface: Colors.white,
+        onSurface: textMain,
       ),
-      textTheme: textTheme.copyWith(
-        displayLarge: GoogleFonts.outfit(
-          color: Colors.white,
-          fontWeight: FontWeight.bold,
-          fontSize: 32,
+      textTheme: TextTheme(
+        displayLarge: GoogleFonts.plusJakartaSans(
+          color: textMain,
+          fontWeight: FontWeight.w800,
+          fontSize: 30,
+          letterSpacing: -0.8,
         ),
-        headlineMedium: GoogleFonts.outfit(
-          color: Colors.white,
+        headlineMedium: GoogleFonts.plusJakartaSans(
+          color: textMain,
           fontWeight: FontWeight.w700,
           fontSize: 22,
+          letterSpacing: -0.5,
         ),
-        titleLarge: GoogleFonts.outfit(
-          color: Colors.white,
+        titleLarge: GoogleFonts.plusJakartaSans(
+          color: textMain,
           fontWeight: FontWeight.w600,
-          fontSize: 18,
+          fontSize: 17,
+          letterSpacing: -0.3,
         ),
-        bodyLarge: GoogleFonts.inter(
-          color: const Color(0xFFE2E8F0),
+        titleMedium: GoogleFonts.plusJakartaSans(
+          color: textMain,
+          fontWeight: FontWeight.w600,
           fontSize: 15,
         ),
-        bodyMedium: GoogleFonts.inter(
-          color: const Color(0xFF94A3B8),
+        bodyLarge: GoogleFonts.plusJakartaSans(
+          color: textMain,
+          fontSize: 14,
+        ),
+        bodyMedium: GoogleFonts.plusJakartaSans(
+          color: textMuted,
           fontSize: 13,
+        ),
+        bodySmall: GoogleFonts.plusJakartaSans(
+          color: textDim,
+          fontSize: 11,
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: accentCyan,
-          foregroundColor: Colors.black,
+          backgroundColor: textMain,
+          foregroundColor: const Color(0xFF09090B),
           elevation: 0,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(10),
           ),
-          textStyle: GoogleFonts.outfit(
+          textStyle: GoogleFonts.plusJakartaSans(
             fontWeight: FontWeight.w700,
-            fontSize: 15,
+            fontSize: 14,
+          ),
+        ),
+      ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: textMain,
+          side: const BorderSide(color: border, width: 1),
+          backgroundColor: bgSurface,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          textStyle: GoogleFonts.plusJakartaSans(
+            fontWeight: FontWeight.w600,
+            fontSize: 13,
           ),
         ),
       ),
       appBarTheme: const AppBarTheme(
-        backgroundColor: Colors.transparent,
+        backgroundColor: bgDark,
+        surfaceTintColor: Colors.transparent,
         elevation: 0,
         centerTitle: false,
+        iconTheme: IconThemeData(color: textMain, size: 20),
       ),
     );
   }

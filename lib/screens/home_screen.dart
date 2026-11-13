@@ -15,6 +15,7 @@ import '../widgets/scanner_fab.dart';
 import 'document_detail_screen.dart';
 import 'ocr_screen.dart';
 import 'pdf_preview_screen.dart';
+import 'pdf_tools_screen.dart';
 import 'vehicle_tax_screen.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -168,8 +169,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   void _showInfoModal() {
     MaoneArtModal.showAlertModal(
       context,
-      title: 'MaoneArt Scanner v1.1.2',
-      message: 'Aplikasi Smart AI Document Scanner dengan Google ML Kit Paper Detection, Perspective Auto-Crop, Offline OCR Text Extractor, Multi-Page PDF Exporter, dan Cek Pajak Kendaraan Samsat.',
+      title: 'MaoneArt Scanner v1.2.0',
+      message: 'Aplikasi Smart AI Document Scanner dengan Pelurus & Crop Presisi, Full PDF Tools Suite (Baca, Kompres, Pisah, Gabung), Offline OCR Text Extractor, dan Cek Pajak Kendaraan Samsat.',
       icon: Icons.document_scanner_rounded,
       iconColor: AppTheme.accentCyan,
       buttonText: 'Tutup',
@@ -226,7 +227,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   IconButton(
                     icon: Icon(
                       _isSearchExpanded ? Icons.close_rounded : Icons.search_rounded,
-                      color: Colors.white70,
+                      color: AppTheme.textMuted,
                       size: 20,
                     ),
                     onPressed: () {
@@ -240,25 +241,38 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     },
                   ),
                   IconButton(
+                    icon: const Icon(Icons.picture_as_pdf_rounded, color: AppTheme.accentCyan, size: 20),
+                    tooltip: 'PDF Tools Suite',
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const PdfToolsScreen()),
+                      );
+                    },
+                  ),
+                  IconButton(
                     icon: Icon(
                       state.isGridView ? Icons.view_list_rounded : Icons.grid_view_rounded,
-                      color: AppTheme.accentCyan,
+                      color: AppTheme.textMuted,
                       size: 20,
                     ),
                     tooltip: state.isGridView ? 'Tampilan List' : 'Tampilan Grid',
                     onPressed: () => ref.read(documentProvider.notifier).toggleViewMode(),
                   ),
                   PopupMenuButton<String>(
-                    icon: const Icon(Icons.more_vert_rounded, color: Colors.white70, size: 22),
+                    icon: const Icon(Icons.more_vert_rounded, color: AppTheme.textMuted, size: 20),
                     tooltip: 'Menu Lainnya',
-                    color: const Color(0xFF0F172A),
+                    color: AppTheme.bgCard,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                      side: BorderSide(color: Colors.white.withValues(alpha: 0.15), width: 1),
+                      borderRadius: BorderRadius.circular(10),
+                      side: const BorderSide(color: AppTheme.border, width: 1),
                     ),
                     offset: const Offset(0, 48),
                     onSelected: (value) {
-                      if (value == 'tax') {
+                      if (value == 'pdf_tools') {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => const PdfToolsScreen()),
+                        );
+                      } else if (value == 'tax') {
                         Navigator.of(context).push(
                           MaterialPageRoute(builder: (_) => const VehicleTaxScreen()),
                         );
@@ -268,21 +282,42 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     },
                     itemBuilder: (context) => [
                       PopupMenuItem<String>(
+                        value: 'pdf_tools',
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                color: AppTheme.accentCyan.withValues(alpha: 0.15),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: const Icon(Icons.picture_as_pdf_rounded, color: AppTheme.accentCyan, size: 16),
+                            ),
+                            const SizedBox(width: 12),
+                            Text(
+                              'PDF Tools Suite (Baca, Kompres, Pisah, Gabung)',
+                              style: GoogleFonts.plusJakartaSans(color: AppTheme.textMain, fontSize: 13, fontWeight: FontWeight.w600),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const PopupMenuDivider(height: 1),
+                      PopupMenuItem<String>(
                         value: 'tax',
                         child: Row(
                           children: [
                             Container(
                               padding: const EdgeInsets.all(6),
                               decoration: BoxDecoration(
-                                color: AppTheme.accentEmerald.withValues(alpha: 0.2),
-                                borderRadius: BorderRadius.circular(8),
+                                color: AppTheme.accentEmerald.withValues(alpha: 0.15),
+                                borderRadius: BorderRadius.circular(6),
                               ),
-                              child: const Icon(Icons.directions_car_rounded, color: AppTheme.accentEmerald, size: 18),
+                              child: const Icon(Icons.directions_car_rounded, color: AppTheme.accentEmerald, size: 16),
                             ),
                             const SizedBox(width: 12),
                             Text(
                               'Cek Pajak Kendaraan',
-                              style: GoogleFonts.outfit(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600),
+                              style: GoogleFonts.plusJakartaSans(color: AppTheme.textMain, fontSize: 13, fontWeight: FontWeight.w600),
                             ),
                           ],
                         ),
@@ -295,15 +330,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             Container(
                               padding: const EdgeInsets.all(6),
                               decoration: BoxDecoration(
-                                color: AppTheme.accentCyan.withValues(alpha: 0.2),
-                                borderRadius: BorderRadius.circular(8),
+                                color: AppTheme.accentPurple.withValues(alpha: 0.15),
+                                borderRadius: BorderRadius.circular(6),
                               ),
-                              child: const Icon(Icons.info_outline_rounded, color: AppTheme.accentCyan, size: 18),
+                              child: const Icon(Icons.info_outline_rounded, color: AppTheme.accentPurple, size: 16),
                             ),
                             const SizedBox(width: 12),
                             Text(
                               'Tentang Aplikasi',
-                              style: GoogleFonts.outfit(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600),
+                              style: GoogleFonts.plusJakartaSans(color: AppTheme.textMain, fontSize: 13, fontWeight: FontWeight.w600),
                             ),
                           ],
                         ),
@@ -406,6 +441,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       floatingActionButton: ScannerFab(
         onScanPressed: _startCameraScan,
         onGalleryPressed: _startGalleryImport,
+        onPdfToolsPressed: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (_) => const PdfToolsScreen()),
+          );
+        },
       ),
     );
   }

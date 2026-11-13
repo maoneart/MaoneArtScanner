@@ -36,7 +36,7 @@ class DocumentCard extends StatelessWidget {
 
     return GlassContainer(
       padding: EdgeInsets.zero,
-      borderRadius: 18,
+      borderRadius: 12,
       onTap: onTap,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -56,10 +56,10 @@ class DocumentCard extends StatelessWidget {
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                         colors: [
+                          Colors.black.withValues(alpha: 0.5),
+                          Colors.transparent,
+                          Colors.transparent,
                           Colors.black.withValues(alpha: 0.6),
-                          Colors.transparent,
-                          Colors.transparent,
-                          Colors.black.withValues(alpha: 0.7),
                         ],
                       ),
                     ),
@@ -71,23 +71,23 @@ class DocumentCard extends StatelessWidget {
                   top: 8,
                   left: 8,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
                     decoration: BoxDecoration(
-                      color: Colors.black.withValues(alpha: 0.65),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
+                      color: AppTheme.bgCard.withValues(alpha: 0.85),
+                      borderRadius: BorderRadius.circular(6),
+                      border: Border.all(color: AppTheme.border),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(Icons.layers_rounded, size: 13, color: AppTheme.accentCyan),
+                        const Icon(Icons.layers_rounded, size: 12, color: AppTheme.accentCyan),
                         const SizedBox(width: 4),
                         Text(
                           '${document.pageCount} Hal',
-                          style: GoogleFonts.outfit(
-                            color: Colors.white,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
+                          style: GoogleFonts.jetBrainsMono(
+                            color: AppTheme.textMain,
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ],
@@ -100,17 +100,17 @@ class DocumentCard extends StatelessWidget {
                   top: 8,
                   right: 8,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
                     decoration: BoxDecoration(
-                      color: AppTheme.accentEmerald.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: AppTheme.accentEmerald.withValues(alpha: 0.4)),
+                      color: AppTheme.bgSurface,
+                      borderRadius: BorderRadius.circular(6),
+                      border: Border.all(color: AppTheme.border),
                     ),
                     child: Text(
                       document.category,
-                      style: GoogleFonts.outfit(
-                        color: AppTheme.accentEmerald,
-                        fontSize: 10,
+                      style: GoogleFonts.plusJakartaSans(
+                        color: AppTheme.accentCyan,
+                        fontSize: 9.5,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -123,21 +123,22 @@ class DocumentCard extends StatelessWidget {
                     bottom: 8,
                     left: 8,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
-                        color: AppTheme.accentPurple.withValues(alpha: 0.8),
-                        borderRadius: BorderRadius.circular(6),
+                        color: AppTheme.accentPurple.withValues(alpha: 0.2),
+                        borderRadius: BorderRadius.circular(4),
+                        border: Border.all(color: AppTheme.accentPurple.withValues(alpha: 0.4)),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.auto_awesome_rounded, size: 10, color: Colors.white),
+                          const Icon(Icons.auto_awesome_rounded, size: 10, color: AppTheme.accentPurple),
                           const SizedBox(width: 4),
                           Text(
                             'OCR',
-                            style: GoogleFonts.outfit(
-                              color: Colors.white,
-                              fontSize: 10,
+                            style: GoogleFonts.jetBrainsMono(
+                              color: AppTheme.accentPurple,
+                              fontSize: 9,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -162,10 +163,10 @@ class DocumentCard extends StatelessWidget {
                         document.title,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: GoogleFonts.outfit(
-                          color: Colors.white,
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
+                        style: GoogleFonts.plusJakartaSans(
+                          color: AppTheme.textMain,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
                     ),
@@ -175,9 +176,9 @@ class DocumentCard extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   formattedDate,
-                  style: GoogleFonts.inter(
-                    color: const Color(0xFF64748B),
-                    fontSize: 11,
+                  style: GoogleFonts.jetBrainsMono(
+                    color: AppTheme.textDim,
+                    fontSize: 10.5,
                   ),
                 ),
               ],
@@ -194,17 +195,17 @@ class DocumentCard extends StatelessWidget {
 
     return GlassContainer(
       padding: const EdgeInsets.all(10),
-      borderRadius: 16,
-      margin: const EdgeInsets.only(bottom: 10),
+      borderRadius: 12,
+      margin: const EdgeInsets.only(bottom: 8),
       onTap: onTap,
       child: Row(
         children: [
           // Thumbnail Preview
           ClipRRect(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(8),
             child: SizedBox(
-              width: 64,
-              height: 78,
+              width: 58,
+              height: 72,
               child: Stack(
                 fit: StackFit.expand,
                 children: [
@@ -215,14 +216,14 @@ class DocumentCard extends StatelessWidget {
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                       decoration: BoxDecoration(
-                        color: Colors.black.withValues(alpha: 0.75),
+                        color: Colors.black.withValues(alpha: 0.8),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
                         '${document.pageCount}p',
-                        style: GoogleFonts.outfit(
+                        style: GoogleFonts.jetBrainsMono(
                           color: Colors.white,
-                          fontSize: 10,
+                          fontSize: 9,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -337,14 +338,14 @@ class DocumentCard extends StatelessWidget {
         popupMenuTheme: PopupMenuThemeData(
           color: AppTheme.bgCard,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-            side: BorderSide(color: Colors.white.withValues(alpha: 0.12)),
+            borderRadius: BorderRadius.circular(10),
+            side: const BorderSide(color: AppTheme.border),
           ),
           elevation: 10,
         ),
       ),
       child: PopupMenuButton<DocumentAction>(
-        icon: const Icon(Icons.more_vert_rounded, color: Color(0xFF94A3B8), size: 20),
+        icon: const Icon(Icons.more_vert_rounded, color: AppTheme.textDim, size: 18),
         padding: EdgeInsets.zero,
         onSelected: onActionSelected,
         itemBuilder: (context) => [
@@ -370,13 +371,13 @@ class DocumentCard extends StatelessWidget {
             DocumentAction.rename,
             Icons.edit_rounded,
             'Ganti Nama',
-            Colors.white70,
+            AppTheme.textMuted,
           ),
           _buildPopupMenuItem(
             DocumentAction.category,
             Icons.label_rounded,
             'Ubah Kategori',
-            Colors.white70,
+            AppTheme.textMuted,
           ),
           const PopupMenuDivider(height: 1),
           _buildPopupMenuItem(
@@ -398,15 +399,23 @@ class DocumentCard extends StatelessWidget {
   ) {
     return PopupMenuItem<DocumentAction>(
       value: value,
-      height: 40,
+      height: 38,
       child: Row(
         children: [
-          Icon(icon, size: 18, color: color),
-          const SizedBox(width: 12),
+          Icon(icon, size: 16, color: color),
+          const SizedBox(width: 10),
           Text(
             label,
-            style: GoogleFonts.outfit(
+            style: GoogleFonts.plusJakartaSans(
               color: color,
+              fontSize: 12.5,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
               fontSize: 13,
               fontWeight: FontWeight.w500,
             ),

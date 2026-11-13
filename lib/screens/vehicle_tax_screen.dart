@@ -330,7 +330,7 @@ Diperiksa via MaoneArt Scanner & e-Samsat
         ),
         title: Text(
           'Cek Pajak Plat Nomor',
-          style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 18),
+          style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 16),
         ),
         actions: [
           IconButton(
@@ -356,12 +356,12 @@ Diperiksa via MaoneArt Scanner & e-Samsat
                         backgroundColor: AppTheme.accentCyan,
                         foregroundColor: Colors.black,
                         padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                       ),
                       icon: const Icon(Icons.document_scanner_rounded, size: 18, color: Colors.black),
                       label: Text(
                         'Pindai Plat (Scanner AI)',
-                        style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 13),
+                        style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 13),
                       ),
                     ),
                   ),
@@ -370,15 +370,15 @@ Diperiksa via MaoneArt Scanner & e-Samsat
                     child: OutlinedButton.icon(
                       onPressed: _isLoading ? null : _scanPlateFromGallery,
                       style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
-                        backgroundColor: Colors.white.withValues(alpha: 0.05),
+                        side: const BorderSide(color: AppTheme.border),
+                        backgroundColor: AppTheme.bgSurface,
                         padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                       ),
                       icon: const Icon(Icons.photo_library_rounded, size: 18, color: AppTheme.accentEmerald),
                       label: Text(
                         'Pilih dari Galeri',
-                        style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+                        style: GoogleFonts.plusJakartaSans(color: AppTheme.textMain, fontWeight: FontWeight.w700, fontSize: 13),
                       ),
                     ),
                   ),
