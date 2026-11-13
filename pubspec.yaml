@@ -49,6 +49,9 @@ dev_dependencies:
   flutter_lints: ^3.0.0
   flutter_launcher_icons: ^0.14.3
 
+dependency_overrides:
+  archive: ^4.1.0
+
 flutter_launcher_icons:
   android: "ic_launcher"
   ios: false
