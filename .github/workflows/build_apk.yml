@@ -47,14 +47,25 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
+      - name: Extract App Version
+        id: app_version
+        run: |
+          VERSION=$(grep '^version:' pubspec.yaml | awk '{print $2}' | cut -d '+' -f 1)
+          echo "version=v$VERSION" >> $GITHUB_OUTPUT
+          echo "raw_version=$VERSION" >> $GITHUB_OUTPUT
+
       - name: Create or Update GitHub Release
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/heads/main') || startsWith(github.ref, 'refs/heads/master')
         with:
-          tag_name: v1.2.0
-          name: 'MaoneArt Scanner v1.2.0 (Precision Cropper & PDF Tools Suite)'
+          tag_name: ${{ steps.app_version.outputs.version }}
+          name: 'MaoneArt Scanner ${{ steps.app_version.outputs.version }} (Permanent Release Key & PDF Suite)'
           body: |
-            ## 📄 MaoneArt Scanner v1.2.0 — Precision Cropper & PDF Tools Suite
+            ## 📄 MaoneArt Scanner ${{ steps.app_version.outputs.version }} — Precision Cropper & PDF Tools Suite
+
+            ### 🔑 Permanent Release Keystore Signature
+            - Ditandatangani dengan keystore resmi permanen MaoneArt (`release.jks`, masa berlaku hingga 2054).
+            - Update berikutnya dapat langsung ditimpa (*in-place update*) tanpa konflik tanda tangan (*signature mismatch*).
 
             ### ✂️ 1. Precision Document Crop & Straightener Editor
             - **Interactive 8-Point Touch Handles**: Pemotong dokumen presisi dengan grid rule-of-thirds dan touch-draggable box.

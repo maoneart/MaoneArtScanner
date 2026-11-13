@@ -1,7 +1,7 @@
 name: maoneart_scanner
 description: "MaoneArt Scanner - Smart AI Document Scanner, Precision Crop & Straightener, Full PDF Tools Suite (View, Compress, Split, Merge), OCR & Samsat Tax Checker"
 publish_to: 'none'
-version: 1.2.0+13
+version: 1.2.1+14
 
 environment:
   sdk: '>=3.0.0 <4.0.0'

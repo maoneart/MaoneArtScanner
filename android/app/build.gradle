@@ -12,6 +12,14 @@ if (localPropertiesFile.exists()) {
     }
 }
 
+def keystoreProperties = new Properties()
+def keystorePropertiesFile = rootProject.file('key.properties')
+if (keystorePropertiesFile.exists()) {
+    keystorePropertiesFile.withReader('UTF-8') { reader ->
+        keystoreProperties.load(reader)
+    }
+}
+
 def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
 if (flutterVersionCode == null) {
     flutterVersionCode = '1'
@@ -45,9 +53,27 @@ android {
         multiDexEnabled true
     }
 
+    signingConfigs {
+        release {
+            def keyFile = file('release.jks')
+            if (!keyFile.exists()) {
+                keyFile = rootProject.file('android/app/release.jks')
+            }
+            if (!keyFile.exists()) {
+                keyFile = rootProject.file('app/release.jks')
+            }
+            storeFile keyFile
+            storePassword (keystoreProperties['storePassword'] ?: 'maoneart_key_2026')
+            keyAlias (keystoreProperties['keyAlias'] ?: 'maoneart')
+            keyPassword (keystoreProperties['keyPassword'] ?: 'maoneart_key_2026')
+            v1SigningEnabled true
+            v2SigningEnabled true
+        }
+    }
+
     buildTypes {
         release {
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
             minifyEnabled false
             shrinkResources false
         }
