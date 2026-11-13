@@ -41,4 +41,8 @@
   4. **CI/CD Build & GitHub Release v1.2.0**:
      - Resolusi dependensi Dart & Gradle AGP di runner Ubuntu GitHub Actions.
      - Build release sukses (`assembleRelease` in 7m52s) dan otomatis terbit di GitHub Release [v1.2.0](https://github.com/maoneart/MaoneArtScanner/releases/tag/v1.2.0).
-     - APK rilis otomatis diunduh ke `/sdcard/Download/MaoneArtScanner.apk` (97 MB).
+  5. **Permanent Release Keystore & Release v1.2.1 (Build 14)**:
+     - Mengatasi masalah gagal update (signature mismatch) karena build sebelumnya masih memakai ephemeral debug keystore acak GitHub Actions.
+     - Mengintegrasikan keystore permanen resmi MaoneArt (`release.jks`, masa berlaku s/d 2054, `CN=Hermawan`).
+     - Seluruh build rilis berikutnya kini 100% menggunakan 1-signature permanen sehingga update aplikasi di HP bisa langsung ditimpa (*in-place update*).
+     - APK rilis resmi berhasil diterbitkan di GitHub Release [v1.2.1](https://github.com/maoneart/MaoneArtScanner/releases/tag/v1.2.1) dan diunduh ke `/sdcard/Download/MaoneArtScanner.apk`.
