@@ -416,12 +416,4 @@ class DocumentCard extends StatelessWidget {
       ),
     );
   }
-              fontSize: 13,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }
