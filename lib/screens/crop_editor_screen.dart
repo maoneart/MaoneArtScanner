@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:math' as math;
 import 'dart:typed_data';
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image/image.dart' as img;
@@ -665,7 +666,7 @@ class _CropOverlayPainter extends CustomPainter {
     // Clip out the crop rectangle
     canvas.save();
     canvas.clipRect(imageBounds);
-    canvas.clipRect(cropRect, clipOp: ClipOp.difference);
+    canvas.clipRect(cropRect, clipOp: ui.ClipOp.difference);
     canvas.drawRect(imageBounds, backgroundPaint);
     canvas.restore();
   }
