@@ -38,3 +38,7 @@
      - Menambahkan tombol akses PDF Suite di Top App Bar dan Floating Action Bar pada `HomeScreen`.
   3. **Rombak Desain Total ke SHADCN UI (Zinc Dark)**:
      - Mengubah `AppTheme`, `GlassContainer` (menjadi solid 1px border card), `CategoryFilterBar`, `DocumentCard`, `ScannerFab`, `MaoneArtModal`, `OcrScreen`, dan `PdfPreviewScreen` menjadi desain minimalis profesional berkelas tinggi.
+  4. **CI/CD Build & GitHub Release v1.2.0**:
+     - Resolusi dependensi Dart & Gradle AGP di runner Ubuntu GitHub Actions.
+     - Build release sukses (`assembleRelease` in 7m52s) dan otomatis terbit di GitHub Release [v1.2.0](https://github.com/maoneart/MaoneArtScanner/releases/tag/v1.2.0).
+     - APK rilis otomatis diunduh ke `/sdcard/Download/MaoneArtScanner.apk` (97 MB).
