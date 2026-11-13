@@ -82,6 +82,9 @@ class DocumentNotifier extends StateNotifier<DocumentListState> {
     }
   }
 
+  /// Alias penyegaran dokumen
+  Future<void> refreshDocuments() => loadDocuments();
+
   /// Membuat dokumen baru dari hasil scan
   Future<ScannedDocument?> createDocument({
     required List<String> pagePaths,

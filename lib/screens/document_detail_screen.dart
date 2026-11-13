@@ -222,7 +222,7 @@ class _DocumentDetailScreenState extends ConsumerState<DocumentDetailScreen> {
       PaintingBinding.instance.imageCache.clear();
       PaintingBinding.instance.imageCache.clearLiveImages();
       setState(() {});
-      ref.read(documentProvider.notifier).refreshDocuments();
+      ref.read(documentProvider.notifier).loadDocuments();
     }
   }
 
